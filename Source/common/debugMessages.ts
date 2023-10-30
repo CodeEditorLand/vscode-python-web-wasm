@@ -3,8 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { DebugProtocol } from '@vscode/debugprotocol';
-
+import { DebugProtocol } from "@vscode/debugprotocol";
 
 export class Message implements DebugProtocol.ProtocolMessage {
 	seq: number;
@@ -22,7 +21,7 @@ export class Response extends Message implements DebugProtocol.Response {
 	command: string;
 
 	public constructor(request: DebugProtocol.Request, message?: string) {
-		super('response');
+		super("response");
 		this.request_seq = request.seq;
 		this.command = request.command;
 		if (message) {
@@ -38,7 +37,7 @@ export class Event extends Message implements DebugProtocol.Event {
 	event: string;
 
 	public constructor(event: string, body?: any) {
-		super('event');
+		super("event");
 		this.event = event;
 		if (body) {
 			(<any>this).body = body;
