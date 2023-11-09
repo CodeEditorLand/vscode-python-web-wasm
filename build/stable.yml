@@ -1,48 +1,46 @@
 name: $(Date:yyyyMMdd)$(Rev:.r)
 
 trigger:
-    branches:
-        include:
-            - main
-            - release/*
+  branches:
+    include:
+      - main
+      - release/*
 pr: none
 
 resources:
-    repositories:
-        - repository: templates
-          type: github
-          name: microsoft/vscode-engineering
-          ref: main
-          endpoint: Monaco
+  repositories:
+    - repository: templates
+      type: github
+      name: microsoft/vscode-engineering
+      ref: main
+      endpoint: Monaco
 
 parameters:
-    - name: publishExtension
-      displayName: 🚀 Publish Extension
-      type: boolean
-      default: false
+  - name: publishExtension
+    displayName: 🚀 Publish Extension
+    type: boolean
+    default: false
 
 extends:
-    template: azure-pipelines/extension/stable.yml@templates
-    parameters:
-        buildSteps:
-            - template: templates/compile.yml
+  template: azure-pipelines/extension/stable.yml@templates
+  parameters:
+    buildSteps:
+      - template: templates/compile.yml
 
-        ghCreateTag: true
-        ghTagPrefix: release/
+    ghCreateTag: true
+    ghTagPrefix: release/
 
-        tsa:
-            enabled: true
-            options:
-                codebaseName: "devdiv_$(Build.Repository.Name)"
-                serviceTreeID: "1788a767-5861-45fb-973b-c686b67c5541"
-                instanceUrl: "https://devdiv.visualstudio.com/defaultcollection"
-                projectName: "DevDiv"
-                areaPath:
-                    'DevDiv\\VS Code (compliance tracking only)\\Visual Studio
-                    Code Web Extensions'
-                notificationAliases:
-                    - "stbatt@microsoft.com"
-                    - "lszomoru@microsoft.com"
-                    - "dirkb@microsoft.com"
+    tsa:
+      enabled: true
+      options:
+        codebaseName: 'devdiv_$(Build.Repository.Name)'
+        serviceTreeID: '1788a767-5861-45fb-973b-c686b67c5541'
+        instanceUrl: 'https://devdiv.visualstudio.com/defaultcollection'
+        projectName: 'DevDiv'
+        areaPath: 'DevDiv\\VS Code (compliance tracking only)\\Visual Studio Code Web Extensions'
+        notificationAliases:
+          - 'stbatt@microsoft.com'
+          - 'lszomoru@microsoft.com'
+          - 'dirkb@microsoft.com'
 
-        publishExtension: ${{ parameters.publishExtension }}
+    publishExtension: ${{ parameters.publishExtension }}
