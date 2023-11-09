@@ -6,107 +6,107 @@
 */
 
 body {
-    background-color: #f0f0f8;
+	background-color: #f0f0f8;
 }
 
 table.heading tr {
-    background-color: #7799ee;
+	background-color: #7799ee;
 }
 
 .decor {
-    color: #ffffff;
+	color: #ffffff;
 }
 
 .title-decor {
-    background-color: #ffc8d8;
-    color: #000000;
+	background-color: #ffc8d8;
+	color: #000000;
 }
 
 .pkg-content-decor {
-    background-color: #aa55cc;
+	background-color: #aa55cc;
 }
 
 .index-decor {
-    background-color: #ee77aa;
+	background-color: #ee77aa;
 }
 
 .functions-decor {
-    background-color: #eeaa77;
+	background-color: #eeaa77;
 }
 
 .data-decor {
-    background-color: #55aa55;
+	background-color: #55aa55;
 }
 
 .author-decor {
-    background-color: #7799ee;
+	background-color: #7799ee;
 }
 
 .credits-decor {
-    background-color: #7799ee;
+	background-color: #7799ee;
 }
 
 .error-decor {
-    background-color: #bb0000;
+	background-color: #bb0000;
 }
 
 .grey {
-    color: #909090;
+	color: #909090;
 }
 
 .white {
-    color: #ffffff;
+	color: #ffffff;
 }
 
 .repr {
-    color: #c040c0;
+	color: #c040c0;
 }
 
 table.heading tr td.title {
-    vertical-align: bottom;
+	vertical-align: bottom;
 }
 
 table.heading tr td.extra {
-    vertical-align: bottom;
-    text-align: right;
+	vertical-align: bottom;
+	text-align: right;
 }
 
 .heading-text {
-    font-family: helvetica, arial;
+	font-family: helvetica, arial;
 }
 
 .bigsection {
-    font-size: larger;
+	font-size: larger;
 }
 
 .title {
-    font-size: x-large;
+	font-size: x-large;
 }
 
 .code {
-    font-family: monospace;
+	font-family: monospace;
 }
 
 table {
-    width: 100%;
-    border-spacing : 0;
-    border-collapse : collapse;
-    border: 0;
+	width: 100%;
+	border-spacing: 0;
+	border-collapse: collapse;
+	border: 0;
 }
 
 td {
-    padding: 2;
+	padding: 2;
 }
 
 td.section-title {
-    vertical-align: bottom;
+	vertical-align: bottom;
 }
 
 td.multicolumn {
-    width: 25%;
-    vertical-align: bottom;
+	width: 25%;
+	vertical-align: bottom;
 }
 
 td.singlecolumn {
-    width: 100%;
+	width: 100%;
 }

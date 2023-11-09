@@ -7,11 +7,11 @@
 		"node": true
 	},
 	"rules": {
-        "semi": "error",
+		"semi": "error",
 		"no-extra-semi": "warn",
 		"curly": "warn",
-		"quotes": ["error", "single", { "allowTemplateLiterals": true } ],
+		"quotes": ["error", "single", { "allowTemplateLiterals": true }],
 		"eqeqeq": "error",
-		"indent": ["warn", "tab", { "SwitchCase": 1 } ]
+		"indent": ["warn", "tab", { "SwitchCase": 1 }]
 	}
 }

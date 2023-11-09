@@ -4,21 +4,19 @@
 		"ecmaVersion": 6,
 		"sourceType": "module"
 	},
-    "plugins": [
-        "@typescript-eslint"
-    ],
+	"plugins": ["@typescript-eslint"],
 	"env": {
 		"node": true
 	},
 	"rules": {
-        "semi": "off",
-        "@typescript-eslint/semi": "error",
+		"semi": "off",
+		"@typescript-eslint/semi": "error",
 		"no-extra-semi": "warn",
 		"curly": "warn",
-		"quotes": ["error", "single", { "allowTemplateLiterals": true } ],
+		"quotes": ["error", "single", { "allowTemplateLiterals": true }],
 		"eqeqeq": "error",
 		"indent": "off",
-		"@typescript-eslint/indent": ["warn", "tab", { "SwitchCase": 1 } ],
+		"@typescript-eslint/indent": ["warn", "tab", { "SwitchCase": 1 }],
 		"@typescript-eslint/no-floating-promises": "error"
 	}
 }
