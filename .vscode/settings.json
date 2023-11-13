@@ -1,5 +1,7 @@
 {
-	"git.branchProtection": ["main"],
+	"git.branchProtection": [
+		"main"
+	],
 	"git.branchProtectionPrompt": "alwaysCommitToNewBranch",
 
 	"task.allowAutomaticTasks": "on",
@@ -18,7 +20,10 @@
 		"!@typescript-eslint/*",
 		"*"
 	],
-	"eslint.workingDirectories": ["bin", "."],
+	"eslint.workingDirectories": [
+		"bin",
+		"."
+	],
 	"cSpell.words": [
 		"badf",
 		"fdflags",

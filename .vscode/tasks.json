@@ -15,7 +15,9 @@
 				"reveal": "never",
 				"panel": "dedicated"
 			},
-			"problemMatcher": ["$tsc-watch"]
+			"problemMatcher": [
+				"$tsc-watch"
+			],
 		},
 		{
 			"type": "npm",
@@ -39,7 +41,9 @@
 				"reveal": "never",
 				"panel": "dedicated"
 			},
-			"problemMatcher": ["$tsc"]
+			"problemMatcher": [
+				"$tsc"
+			]
 		},
 		{
 			"type": "npm",

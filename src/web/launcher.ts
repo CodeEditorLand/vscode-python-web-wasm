@@ -3,31 +3,24 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  * ------------------------------------------------------------------------------------------ */
 
-import { ExtensionContext, Uri } from "vscode";
+import { ExtensionContext, Uri } from 'vscode';
 
-import { ApiServiceConnection, Requests } from "@vscode/sync-api-service";
-import {
-	ServiceConnection,
-	MessageConnection as SyncMessageConnection,
-} from "@vscode/sync-api-common/browser";
+import { ApiServiceConnection, Requests } from '@vscode/sync-api-service';
+import { ServiceConnection, MessageConnection as SyncMessageConnection } from '@vscode/sync-api-common/browser';
 
-import { BaseLauncher, MessageConnection } from "../common/launcher";
-import { MessageNotifications, MessageRequests } from "../common/messages";
+import { BaseLauncher, MessageConnection } from '../common/launcher';
+import { MessageNotifications, MessageRequests } from '../common/messages';
 
 export class WebLauncher extends BaseLauncher {
+
 	private worker: Worker | undefined;
 
 	public constructor() {
 		super();
 	}
 
-	protected async createMessageConnection(
-		context: ExtensionContext
-	): Promise<MessageConnection> {
-		const filename = Uri.joinPath(
-			context.extensionUri,
-			"./dist/web/pythonWasmWorker.js"
-		).toString();
+	protected async createMessageConnection(context: ExtensionContext): Promise<MessageConnection> {
+		const filename = Uri.joinPath(context.extensionUri, './dist/web/pythonWasmWorker.js').toString();
 		this.worker = new Worker(filename);
 		const channel = new MessageChannel();
 		const ready = new Promise<void>((resolve, reject) => {
@@ -36,7 +29,7 @@ export class WebLauncher extends BaseLauncher {
 				return;
 			}
 			this.worker.onmessage = (event: MessageEvent<string>) => {
-				if (event.data === "ready") {
+				if (event.data === 'ready') {
 					resolve();
 				} else {
 					reject(new Error(`Missing ready event from worker`));
@@ -48,22 +41,12 @@ export class WebLauncher extends BaseLauncher {
 		});
 		this.worker.postMessage(channel.port2, [channel.port2]);
 		await ready;
-		return new SyncMessageConnection<
-			MessageRequests,
-			undefined,
-			undefined,
-			MessageNotifications
-		>(channel.port1);
+		return new SyncMessageConnection<MessageRequests, undefined, undefined, MessageNotifications>(channel.port1);
 	}
 
-	protected async createSyncConnection(
-		messageConnection: MessageConnection
-	): Promise<[ApiServiceConnection, any]> {
+	protected async createSyncConnection(messageConnection: MessageConnection): Promise<[ApiServiceConnection, any]> {
 		const channel = new MessageChannel();
-		const result = new ServiceConnection<
-			Requests,
-			ApiServiceConnection.ReadyParams
-		>(channel.port1);
+		const result = new ServiceConnection<Requests, ApiServiceConnection.ReadyParams>(channel.port1);
 		return [result, channel.port2];
 	}
 

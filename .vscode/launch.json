@@ -5,9 +5,13 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"args": ["--extensionDevelopmentPath=${workspaceFolder}"],
+			"args": [
+				"--extensionDevelopmentPath=${workspaceFolder}"
+			],
 			"name": "Launch in Desktop - Node ExtHost",
-			"outFiles": ["${workspaceFolder}/out/desktop/**/*.js"],
+			"outFiles": [
+				"${workspaceFolder}/out/desktop/**/*.js"
+			],
 			"preLaunchTask": "npm: esbuild",
 			"request": "launch",
 			"type": "extensionHost"
@@ -18,7 +22,9 @@
 				"--extensionDevelopmentKind=web"
 			],
 			"name": "Launch in Desktop - Web Worker ExtHost",
-			"outFiles": ["${workspaceFolder}/dist/web/**/*.js"],
+			"outFiles": [
+				"${workspaceFolder}/dist/web/**/*.js"
+			],
 			"preLaunchTask": "npm: esbuild",
 			"request": "launch",
 			"type": "extensionHost"

@@ -3,17 +3,17 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  * ------------------------------------------------------------------------------------------ */
 
-import type { IPath } from "./path";
-import type { Launcher } from "./launcher";
+import type { IPath } from './path';
+import type { Launcher } from './launcher';
 interface RAL {
 	readonly launcher: {
 		create(): Launcher;
-	};
+	}
 	readonly path: IPath;
 	readonly isCrossOriginIsolated: boolean;
 	readonly timer: {
 		setTimeout(callback: () => void, timeout: number): any;
-	};
+	}
 }
 
 let _ral: RAL | undefined;

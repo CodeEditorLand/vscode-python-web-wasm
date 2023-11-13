@@ -3,36 +3,25 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  * ------------------------------------------------------------------------------------------ */
 
-import { ExtensionContext, Terminal, Event, EventEmitter } from "vscode";
+import { ExtensionContext, Terminal, Event, EventEmitter } from 'vscode';
 
-import {
-	ApiServiceConnection,
-	BaseMessageConnection,
-	CharacterDeviceDriver,
-	DTOs,
-	ServicePseudoTerminal,
-} from "@vscode/sync-api-service";
-import { ApiService } from "@vscode/sync-api-service";
+import { ApiServiceConnection, BaseMessageConnection, CharacterDeviceDriver, DTOs, ServicePseudoTerminal } from '@vscode/sync-api-service';
+import { ApiService } from '@vscode/sync-api-service';
 
-import PythonInstallation from "./pythonInstallation";
-import { MessageRequests, MessageNotifications } from "./messages";
-import { DebugCharacterDeviceDriver } from "./debugCharacterDeviceDriver";
+import PythonInstallation from './pythonInstallation';
+import { MessageRequests, MessageNotifications } from './messages';
+import { DebugCharacterDeviceDriver } from './debugCharacterDeviceDriver';
 
-export type MessageConnection = BaseMessageConnection<
-	MessageRequests,
-	undefined,
-	undefined,
-	MessageNotifications,
-	any
->;
+export type MessageConnection = BaseMessageConnection<MessageRequests, undefined, undefined, MessageNotifications, any>;
 
 type LauncherState = {
-	mode: "run" | "debug" | "repl";
+	mode: 'run' | 'debug' | 'repl';
 	stdio?: CharacterDeviceDriver;
 	program?: string;
 };
 
 export interface Launcher {
+
 	/**
 	 * An event that signals the path mapping used by the
 	 * WASM runtime
@@ -52,11 +41,7 @@ export interface Launcher {
 	 * @param stdio A character device acting as stdio
 	 * @returns A promise that completes when the WASM is executing.
 	 */
-	run(
-		context: ExtensionContext,
-		program: string,
-		stdio: CharacterDeviceDriver
-	): Promise<void>;
+	run(context: ExtensionContext, program: string, stdio: CharacterDeviceDriver): Promise<void>;
 
 	/**
 	 * debug a program using the Python WASM.
@@ -67,13 +52,7 @@ export interface Launcher {
 	 * @param terminator Terminator sent by PDB when it is ready to accept commands.
 	 * @returns A promise that completes when the WASM is executing.
 	 */
-	debug(
-		context: ExtensionContext,
-		program: string,
-		stdio: CharacterDeviceDriver,
-		debugPorts: DebugCharacterDeviceDriver,
-		terminator: String
-	): Promise<void>;
+	debug(context: ExtensionContext, program: string, stdio: CharacterDeviceDriver, debugPorts: DebugCharacterDeviceDriver, terminator: String): Promise<void>;
 
 	/**
 	 * Starts a REPL session.
@@ -82,10 +61,7 @@ export interface Launcher {
 	 * @param stdio A character device acting as stdio
 	 * @returns A promise that completes when the WASM is executing.
 	 */
-	startRepl(
-		context: ExtensionContext,
-		stdio: CharacterDeviceDriver
-	): Promise<void>;
+	startRepl(context: ExtensionContext, stdio: CharacterDeviceDriver): Promise<void>;
 
 	/**
 	 * A promise that resolves then the WASM finished running.
@@ -102,9 +78,10 @@ export type PathMapping = {
 };
 
 export abstract class BaseLauncher {
+
 	private readonly exitPromise: Promise<number>;
-	private exitResolveCallback!: (value: number) => void;
-	private exitRejectCallback!: (reason: any) => void;
+	private exitResolveCallback!: ((value: number) => void);
+	private exitRejectCallback!: ((reason: any) => void);
 
 	private terminal: Terminal | undefined;
 
@@ -127,131 +104,63 @@ export abstract class BaseLauncher {
 		return this.state;
 	}
 
-	public run(
-		context: ExtensionContext,
-		program: string,
-		stdio: CharacterDeviceDriver
-	): Promise<void> {
-		return this.doRun("run", context, stdio, program);
+	public run(context: ExtensionContext, program: string, stdio: CharacterDeviceDriver): Promise<void> {
+		return this.doRun('run', context, stdio, program);
 	}
 
-	public debug(
-		context: ExtensionContext,
-		program: string,
-		stdio: CharacterDeviceDriver,
-		debugPorts: DebugCharacterDeviceDriver,
-		terminator: string
-	): Promise<void> {
-		return this.doRun(
-			"debug",
-			context,
-			stdio,
-			program,
-			debugPorts,
-			terminator
-		);
+	public debug(context: ExtensionContext, program: string, stdio: CharacterDeviceDriver, debugPorts: DebugCharacterDeviceDriver, terminator: string): Promise<void> {
+		return this.doRun('debug', context, stdio, program, debugPorts, terminator);
 	}
 
-	public startRepl(
-		context: ExtensionContext,
-		stdio: CharacterDeviceDriver
-	): Promise<void> {
-		return this.doRun("repl", context, stdio);
+	public startRepl(context: ExtensionContext, stdio: CharacterDeviceDriver): Promise<void> {
+		return this.doRun('repl', context, stdio);
 	}
 
-	private doRun(
-		mode: "run",
-		context: ExtensionContext,
-		stdio: CharacterDeviceDriver,
-		program: string
-	): Promise<void>;
-	private doRun(
-		mode: "debug",
-		context: ExtensionContext,
-		stdio: CharacterDeviceDriver | undefined,
-		program: string,
-		debugPorts: DebugCharacterDeviceDriver,
-		terminator: string
-	): Promise<void>;
-	private doRun(
-		mode: "repl",
-		context: ExtensionContext,
-		stdio: CharacterDeviceDriver
-	): Promise<void>;
-	private async doRun(
-		mode: "run" | "debug" | "repl",
-		context: ExtensionContext,
-		stdio: CharacterDeviceDriver,
-		program?: string,
-		debugPorts?: DebugCharacterDeviceDriver,
-		terminator?: string
-	): Promise<void> {
+	private doRun(mode: 'run', context: ExtensionContext, stdio: CharacterDeviceDriver, program: string): Promise<void>;
+	private doRun(mode: 'debug', context: ExtensionContext, stdio: CharacterDeviceDriver | undefined, program: string, debugPorts: DebugCharacterDeviceDriver, terminator: string): Promise<void>;
+	private doRun(mode: 'repl', context: ExtensionContext, stdio: CharacterDeviceDriver): Promise<void>;
+	private async doRun(mode: 'run' | 'debug' | 'repl', context: ExtensionContext, stdio: CharacterDeviceDriver,  program?: string, debugPorts?: DebugCharacterDeviceDriver, terminator?: string): Promise<void> {
 		this.state = { mode, stdio, program };
-		const [{ repository, root }, sharedWasmBytes, messageConnection] =
-			await Promise.all([
-				PythonInstallation.getConfig(),
-				PythonInstallation.sharedWasmBytes(),
-				this.createMessageConnection(context),
-			]);
+		const [{ repository, root }, sharedWasmBytes, messageConnection] = await Promise.all([PythonInstallation.getConfig(), PythonInstallation.sharedWasmBytes(), this.createMessageConnection(context)]);
 
 		messageConnection.listen();
-		messageConnection.onNotification("pathMappings", (params) => {
+		messageConnection.onNotification('pathMappings', (params) => {
 			this._onPathMapping.fire(params.mapping);
 		});
 		// Send initialize to the worker. We could cache them in the future.
-		await messageConnection.sendRequest("initialize", {
+		await messageConnection.sendRequest('initialize', {
 			pythonRepository: repository.toString(true),
 			pythonRoot: root,
-			binary: sharedWasmBytes,
+			binary: sharedWasmBytes
 		});
 
-		const [syncConnection, port] =
-			await this.createSyncConnection(messageConnection);
-		const apiService = new ApiService(
-			"Python WASM Execution",
-			syncConnection,
-			{
-				exitHandler: (_rval) => {},
-				echoName: false,
-			}
-		);
+		const [syncConnection, port] = await this.createSyncConnection(messageConnection);
+		const apiService = new ApiService('Python WASM Execution', syncConnection, {
+			exitHandler: (_rval) => {
+			},
+			echoName: false,
+		});
 
 		apiService.registerCharacterDeviceDriver(stdio, true);
-		if (mode === "debug") {
+		if (mode === 'debug') {
 			apiService.registerCharacterDeviceDriver(debugPorts!, false);
 		}
 		apiService.signalReady();
 
-		const runRequest: Promise<number> =
-			mode === "run"
-				? messageConnection.sendRequest(
-						"executeFile",
-						{ syncPort: port, file: program! },
-						[port]
-				  )
-				: mode === "debug"
-				? messageConnection.sendRequest(
-						"debugFile",
-						{
-							syncPort: port,
-							file: program!,
-							uri: debugPorts!.uri,
-							terminator: terminator!,
-						},
-						[port]
-				  )
-				: messageConnection.sendRequest("runRepl", { syncPort: port }, [
-						port,
-				  ]);
+		const runRequest: Promise<number> = mode === 'run'
+			? messageConnection.sendRequest('executeFile', { syncPort: port, file: program! }, [port])
+			: mode === 'debug'
+				? messageConnection.sendRequest('debugFile', { syncPort: port, file: program!, uri: debugPorts!.uri, terminator: terminator! }, [port])
+				: messageConnection.sendRequest('runRepl', { syncPort: port }, [port]);
 
-		runRequest
-			.then((rval) => {
+		runRequest.
+			then((rval) => {
 				this.exitResolveCallback(rval);
-			})
-			.catch((reason) => {
+			}).
+			catch((reason) => {
 				this.exitRejectCallback(reason);
-			})
-			.finally(() => {
+			}).
+			finally(() => {
 				void this.terminateConnection();
 			});
 	}
@@ -272,13 +181,9 @@ export abstract class BaseLauncher {
 		return this.terminateConnection();
 	}
 
-	protected abstract createMessageConnection(
-		context: ExtensionContext
-	): Promise<MessageConnection>;
+	protected abstract createMessageConnection(context: ExtensionContext): Promise<MessageConnection>;
 
-	protected abstract createSyncConnection(
-		messageConnection: MessageConnection
-	): Promise<[ApiServiceConnection, any]>;
+	protected abstract createSyncConnection(messageConnection: MessageConnection): Promise<[ApiServiceConnection, any]>;
 
 	protected abstract terminateConnection(): Promise<void>;
 }

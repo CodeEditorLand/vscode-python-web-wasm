@@ -3,26 +3,27 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  * ------------------------------------------------------------------------------------------ */
 
-import path from "path-browserify";
+import path from 'path-browserify';
 
-import RAL from "../common/ral";
-import { Launcher } from "../common/launcher";
-import { WebLauncher } from "./launcher";
+import RAL from '../common/ral';
+import { Launcher } from '../common/launcher';
+import { WebLauncher } from './launcher';
 
 const _ril: RAL = Object.freeze<RAL>({
 	launcher: Object.freeze({
 		create(): Launcher {
 			return new WebLauncher();
-		},
+		}
 	}),
 	timer: Object.freeze({
 		setTimeout(callback: () => void, timeoutMs: number): any {
-			return setTimeout(callback, timeoutMs);
-		},
+			return setTimeout(callback,timeoutMs);
+		}
 	}),
 	path: path,
-	isCrossOriginIsolated: crossOriginIsolated,
+	isCrossOriginIsolated: crossOriginIsolated
 });
+
 
 function RIL(): RAL {
 	return _ril;
