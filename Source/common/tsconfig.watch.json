@@ -4,8 +4,11 @@
 		"noUnusedLocals": false,
 		"noUnusedParameters": false,
 		"assumeChangesOnlyAffectDirectDependencies": true,
-		"tsBuildInfoFile": "../../out/common/watch.tsbuildInfo"
+		"tsBuildInfoFile":"../../out/common/watch.tsbuildInfo",
 	},
-	"include": ["."],
-	"references": []
+	"include": [
+		"."
+	],
+	"references": [
+	]
 }
