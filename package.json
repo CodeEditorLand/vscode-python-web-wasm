@@ -15,7 +15,7 @@
 		"url": "https://github.com/microsoft/vscode-python-web-wasm/issues"
 	},
 	"engines": {
-		"vscode": "^1.75.0"
+		"vscode": "1.75.0"
 	},
 	"main": "./dist/desktop/extension.js",
 	"browser": "./dist/web/extension.js",
@@ -28,28 +28,28 @@
 		"ms-vscode.remote-repositories"
 	],
 	"dependencies": {
-		"@types/path-browserify": "^1.0.0",
-		"@vscode/debugprotocol": "^1.59.0",
+		"@types/path-browserify": "1.0.2",
+		"@vscode/debugprotocol": "1.64.0",
 		"@vscode/sync-api-service": "0.9.0",
 		"@vscode/wasm-wasi": "0.9.0",
-		"vscode-uri": "^3.0.7",
-		"path-browserify": "^1.0.1",
-		"uuid": "^9.0.0"
+		"vscode-uri": "3.0.8",
+		"path-browserify": "1.0.1",
+		"uuid": "9.0.1"
 	},
 	"devDependencies": {
-		"@types/node": "^16.11.57",
-		"@types/vscode": "1.75.0",
-		"@types/uuid": "^9.0.0",
-		"@typescript-eslint/eslint-plugin": "^5.51.0",
-		"@typescript-eslint/parser": "^5.51.0",
-		"esbuild": "^0.17.7",
-		"eslint": "^8.33.0",
-		"typescript": "4.9.5",
-		"serve": "^14.2.0",
-		"localtunnel": "^2.0.2",
-		"shelljs": "^0.8.5",
-		"rimraf": "^4.1.2",
-		"@vscode/vsce": "^2.17.0"
+		"@types/node": "20.9.0",
+		"@types/vscode": "1.84.1",
+		"@types/uuid": "9.0.7",
+		"@typescript-eslint/eslint-plugin": "6.11.0",
+		"@typescript-eslint/parser": "6.11.0",
+		"esbuild": "0.19.5",
+		"eslint": "8.53.0",
+		"typescript": "5.2.2",
+		"serve": "14.2.1",
+		"localtunnel": "2.0.2",
+		"shelljs": "0.8.5",
+		"rimraf": "5.0.5",
+		"@vscode/vsce": "2.22.0"
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run all",
