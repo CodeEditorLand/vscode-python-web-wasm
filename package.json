@@ -155,13 +155,13 @@
     "vscode-uri": "3.0.8"
   },
   "devDependencies": {
-    "@types/node": "20.9.4",
+    "@types/node": "20.10.0",
     "@types/uuid": "9.0.7",
     "@types/vscode": "1.84.2",
     "@typescript-eslint/eslint-plugin": "6.12.0",
     "@typescript-eslint/parser": "6.12.0",
     "@vscode/vsce": "2.22.0",
-    "esbuild": "0.19.7",
+    "esbuild": "0.19.8",
     "localtunnel": "2.0.2",
     "rimraf": "5.0.5",
     "serve": "14.2.1",
