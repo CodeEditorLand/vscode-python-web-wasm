@@ -230,19 +230,21 @@ export abstract class BaseLauncher {
 						[port]
 				  )
 				: mode === "debug"
-				? messageConnection.sendRequest(
-						"debugFile",
-						{
-							syncPort: port,
-							file: program!,
-							uri: debugPorts!.uri,
-							terminator: terminator!,
-						},
-						[port]
-				  )
-				: messageConnection.sendRequest("runRepl", { syncPort: port }, [
-						port,
-				  ]);
+				  ? messageConnection.sendRequest(
+							"debugFile",
+							{
+								syncPort: port,
+								file: program!,
+								uri: debugPorts!.uri,
+								terminator: terminator!,
+							},
+							[port]
+				    )
+				  : messageConnection.sendRequest(
+							"runRepl",
+							{ syncPort: port },
+							[port]
+				    );
 
 		runRequest
 			.then((rval) => {
