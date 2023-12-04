@@ -155,7 +155,7 @@
 		"vscode-uri": "3.0.8"
 	},
 	"devDependencies": {
-		"@types/node": "20.10.2",
+		"@types/node": "20.10.3",
 		"@types/uuid": "9.0.7",
 		"@types/vscode": "1.84.2",
 		"@typescript-eslint/eslint-plugin": "6.13.1",
@@ -167,7 +167,7 @@
 		"serve": "14.2.1",
 		"shelljs": "0.8.5",
 		"typescript": "5.3.2",
-		"typescript-esbuild": "0.3.1"
+		"typescript-esbuild": "0.3.2"
 	},
 	"extensionDependencies": [
 		"ms-vscode.remote-repositories"
