@@ -1,8 +1,8 @@
 steps:
-    - script: |
-          npm ci
-      displayName: "Install dependencies"
+  - script: |
+      npm ci
+    displayName: "Install dependencies"
 
-    - script: |
-          npm run all
-      displayName: "Lint & Compile"
+  - script: |
+      npm run all
+    displayName: "Lint & Compile"
