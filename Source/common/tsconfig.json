@@ -2,11 +2,14 @@
 	"extends": "../../tsconfig.base.json",
 	"compilerOptions": {
 		"composite": true,
-		"tsBuildInfoFile": "../../out/common/compile.tsbuildInfo",
+		"tsBuildInfoFile":"../../out/common/compile.tsbuildInfo",
 		"rootDir": ".",
 		"outDir": "../../out/common",
 		"types": []
 	},
-	"include": ["."],
-	"references": []
+	"include": [
+		"."
+	],
+	"references": [
+	]
 }

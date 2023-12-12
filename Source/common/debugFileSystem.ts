@@ -3,137 +3,49 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { URI } from "vscode-uri";
+import { URI } from 'vscode-uri';
 
 import {
-	ApiClient,
-	BaseFileDescriptor,
-	BigInts,
-	DeviceIds,
-	Errno,
-	fd,
-	fdflags,
-	fdstat,
-	FileDescriptor,
-	filestat,
-	FileSystemDeviceDriver,
-	Filetype,
-	filetype,
-	lookupflags,
-	NoSysDeviceDriver,
-	oflags,
-	RAL,
-	Rights,
-	rights,
-	size,
-	WasiError,
-	Whence,
-	VSCodeFS,
-	ApiShape,
-} from "@vscode/wasm-wasi";
+	ApiClient, BaseFileDescriptor, BigInts, DeviceIds, Errno, fd, fdflags, fdstat, FileDescriptor, filestat, FileSystemDeviceDriver, Filetype, filetype,
+	lookupflags, NoSysDeviceDriver, oflags, RAL, Rights, rights, size, WasiError, Whence, VSCodeFS, ApiShape
+} from '@vscode/wasm-wasi';
 
 class DebugFileDescriptor extends BaseFileDescriptor {
-	constructor(
-		deviceId: bigint,
-		fd: fd,
-		filetype: filetype,
-		rights_base: rights,
-		rights_inheriting: rights,
-		fdflags: fdflags,
-		inode: bigint
-	) {
-		super(
-			deviceId,
-			fd,
-			filetype,
-			rights_base,
-			rights_inheriting,
-			fdflags,
-			inode
-		);
+
+	constructor(deviceId: bigint, fd: fd, filetype: filetype, rights_base: rights, rights_inheriting: rights, fdflags: fdflags, inode: bigint) {
+		super(deviceId, fd, filetype, rights_base, rights_inheriting, fdflags, inode);
 	}
 }
 
 class DebugCharacterDeviceFD extends DebugFileDescriptor {
-	constructor(
-		deviceId: bigint,
-		fd: fd,
-		rights_base: rights,
-		rights_inheriting: rights,
-		fdflags: fdflags,
-		inode: bigint
-	) {
-		super(
-			deviceId,
-			fd,
-			Filetype.character_device,
-			rights_base,
-			rights_inheriting,
-			fdflags,
-			inode
-		);
+
+	constructor(deviceId: bigint, fd: fd, rights_base: rights, rights_inheriting: rights, fdflags: fdflags, inode: bigint) {
+		super(deviceId, fd, Filetype.character_device, rights_base, rights_inheriting, fdflags, inode);
 	}
 }
 
 class DebugDirectoryFD extends DebugFileDescriptor {
-	constructor(
-		deviceId: bigint,
-		fd: fd,
-		rights_base: rights,
-		rights_inheriting: rights,
-		fdflags: fdflags,
-		inode: bigint
-	) {
-		super(
-			deviceId,
-			fd,
-			Filetype.directory,
-			rights_base,
-			rights_inheriting,
-			fdflags,
-			inode
-		);
+
+	constructor(deviceId: bigint, fd: fd, rights_base: rights, rights_inheriting: rights, fdflags: fdflags, inode: bigint) {
+		super(deviceId, fd, Filetype.directory, rights_base, rights_inheriting, fdflags, inode);
 	}
 }
 
 class DebugFileFD extends DebugFileDescriptor {
+
 	public cursor: number;
 
-	constructor(
-		deviceId: bigint,
-		fd: fd,
-		rights_base: rights,
-		rights_inheriting: rights,
-		fdflags: fdflags,
-		inode: bigint
-	) {
-		super(
-			deviceId,
-			fd,
-			Filetype.regular_file,
-			rights_base,
-			rights_inheriting,
-			fdflags,
-			inode
-		);
+	constructor(deviceId: bigint, fd: fd, rights_base: rights, rights_inheriting: rights, fdflags: fdflags, inode: bigint) {
+		super(deviceId, fd, Filetype.regular_file, rights_base, rights_inheriting, fdflags, inode);
 		this.cursor = 0;
 	}
 }
 
-export function create(
-	apiClient: ApiShape,
-	textEncoder: RAL.TextEncoder,
-	fileDescriptorId: { next(): number },
-	posix_path: {
-		readonly join: (...paths: string[]) => string;
-		readonly sep: string;
-	},
-	uri: URI,
-	mainContent: string
-): FileSystemDeviceDriver {
+export function create(apiClient: ApiShape, textEncoder: RAL.TextEncoder, fileDescriptorId: { next(): number }, posix_path: { readonly join: (...paths: string[]) => string, readonly sep: string }, uri: URI, mainContent: string): FileSystemDeviceDriver {
+
 	const mainContentBytes = textEncoder.encode(mainContent);
 	const deviceId = DeviceIds.next();
-	const preOpenDirectories: string[] = ["/$debug"];
+	const preOpenDirectories: string[] = ['/$debug'];
 
 	let _root: DebugDirectoryFD | undefined;
 	function rootFd(fd?: fd): DebugDirectoryFD {
@@ -141,14 +53,7 @@ export function create(
 			if (fd === undefined) {
 				throw new WasiError(Errno.inval);
 			}
-			_root = new DebugDirectoryFD(
-				deviceId,
-				fd,
-				VSCodeFS.DirectoryRights.base,
-				VSCodeFS.DirectoryRights.inheriting,
-				0,
-				0n
-			);
+			_root = new DebugDirectoryFD(deviceId, fd, VSCodeFS.DirectoryRights.base, VSCodeFS.DirectoryRights.inheriting, 0, 0n);
 		}
 		return _root;
 	}
@@ -156,93 +61,62 @@ export function create(
 	let _main: DebugFileFD | undefined;
 	function mainFd(): DebugFileFD {
 		if (_main === undefined) {
-			_main = new DebugFileFD(
-				deviceId,
-				fileDescriptorId.next(),
-				VSCodeFS.FileRights.base,
-				VSCodeFS.FileRights.inheriting,
-				0,
-				1n
-			);
+			_main = new DebugFileFD(deviceId, fileDescriptorId.next(), VSCodeFS.FileRights.base, VSCodeFS.FileRights.inheriting, 0, 1n);
 		}
 		return _main;
 	}
 
 	let _input: DebugCharacterDeviceFD | undefined;
-	const InputRights =
-		Rights.fd_read | Rights.fd_filestat_get | Rights.poll_fd_readwrite;
+	const InputRights = Rights.fd_read | Rights.fd_filestat_get| Rights.poll_fd_readwrite;
 	function inputFd(): DebugCharacterDeviceFD {
 		if (_input === undefined) {
-			_input = new DebugCharacterDeviceFD(
-				deviceId,
-				fileDescriptorId.next(),
-				InputRights,
-				Rights.None,
-				0,
-				2n
-			);
+			_input = new DebugCharacterDeviceFD(deviceId, fileDescriptorId.next(), InputRights, Rights.None, 0, 2n);
 		}
 		return _input;
 	}
 
 	let _output: DebugCharacterDeviceFD | undefined;
-	const OutputRights =
-		Rights.fd_write | Rights.fd_filestat_get | Rights.poll_fd_readwrite;
+	const OutputRights = Rights.fd_write | Rights.fd_filestat_get | Rights.poll_fd_readwrite;
 	function outputFd(): DebugCharacterDeviceFD {
 		if (_output === undefined) {
-			_output = new DebugCharacterDeviceFD(
-				deviceId,
-				fileDescriptorId.next(),
-				OutputRights,
-				Rights.None,
-				0,
-				3n
-			);
+			_output = new DebugCharacterDeviceFD(deviceId, fileDescriptorId.next(), OutputRights, Rights.None, 0, 3n);
 		}
 		return _output;
 	}
 
 	function getFileDescriptor(path: string): DebugFileDescriptor {
 		switch (path) {
-			case "/":
+			case '/':
 				return rootFd();
-			case "/main.py":
+			case '/main.py':
 				return mainFd();
-			case "/input":
+			case '/input':
 				return inputFd();
-			case "/output":
+			case '/output':
 				return outputFd();
 			default:
 				throw new WasiError(Errno.noent);
 		}
 	}
-	function assertDebugFileDescriptor(
-		fileDescriptor: FileDescriptor
-	): asserts fileDescriptor is DebugFileDescriptor {
+	function assertDebugFileDescriptor(fileDescriptor: FileDescriptor): asserts fileDescriptor is DebugFileDescriptor {
 		if (!(fileDescriptor instanceof DebugFileDescriptor)) {
 			throw new WasiError(Errno.badf);
 		}
 	}
 
-	function assertCharacterDevice(
-		fileDescriptor: FileDescriptor
-	): asserts fileDescriptor is DebugCharacterDeviceFD {
+	function assertCharacterDevice(fileDescriptor: FileDescriptor): asserts fileDescriptor is DebugCharacterDeviceFD {
 		if (!(fileDescriptor instanceof DebugCharacterDeviceFD)) {
 			throw new WasiError(Errno.badf);
 		}
 	}
 
-	function assertDirectory(
-		fileDescriptor: FileDescriptor
-	): asserts fileDescriptor is DebugDirectoryFD {
+	function assertDirectory(fileDescriptor: FileDescriptor): asserts fileDescriptor is DebugDirectoryFD {
 		if (!(fileDescriptor instanceof DebugDirectoryFD)) {
 			throw new WasiError(Errno.badf);
 		}
 	}
 
-	function assertFile(
-		fileDescriptor: FileDescriptor
-	): asserts fileDescriptor is DebugFileFD {
+	function assertFile(fileDescriptor: FileDescriptor): asserts fileDescriptor is DebugFileFD {
 		if (!(fileDescriptor instanceof DebugFileFD)) {
 			throw new WasiError(Errno.badf);
 		}
@@ -258,23 +132,18 @@ export function create(
 			if (next === undefined) {
 				return undefined;
 			}
-			return [next, rootFd(fd)];
+			return [
+				next,
+				rootFd(fd)
+			];
 		},
-		path_open(
-			parentDescriptor: FileDescriptor,
-			_dirflags: lookupflags,
-			path: string,
-			_oflags: oflags,
-			fs_rights_base: rights,
-			fs_rights_inheriting: rights,
-			fdflags: fdflags
-		): FileDescriptor {
+		path_open(parentDescriptor: FileDescriptor, _dirflags: lookupflags, path: string, _oflags: oflags, fs_rights_base: rights, fs_rights_inheriting: rights, fdflags: fdflags): FileDescriptor {
 			assertDirectory(parentDescriptor);
 			if (parentDescriptor !== rootFd()) {
 				throw new WasiError(Errno.notdir);
 			}
 
-			return getFileDescriptor(posix_path.join("/", path));
+			return getFileDescriptor(posix_path.join('/', path));
 		},
 		fd_fdstat_get(fileDescriptor: FileDescriptor, result: fdstat): void {
 			result.fs_filetype = fileDescriptor.fileType;
@@ -282,10 +151,7 @@ export function create(
 			result.fs_rights_base = fileDescriptor.rights_base;
 			result.fs_rights_inheriting = fileDescriptor.rights_inheriting;
 		},
-		fd_filestat_get(
-			fileDescriptor: FileDescriptor,
-			result: filestat
-		): void {
+		fd_filestat_get(fileDescriptor: FileDescriptor, result: filestat): void {
 			result.dev = fileDescriptor.deviceId;
 			result.ino = fileDescriptor.inode;
 			result.filetype = fileDescriptor.fileType;
@@ -302,11 +168,7 @@ export function create(
 				result.size = 0n;
 			}
 		},
-		fd_seek(
-			fileDescriptor: FileDescriptor,
-			_offset: bigint,
-			whence: number
-		): bigint {
+		fd_seek(fileDescriptor: FileDescriptor, _offset: bigint, whence: number): bigint {
 			// we can't really seek on the input / output character device.
 			if (fileDescriptor instanceof DebugCharacterDeviceFD) {
 				return _offset;
@@ -314,7 +176,7 @@ export function create(
 			assertFile(fileDescriptor);
 
 			const offset = BigInts.asNumber(_offset);
-			switch (whence) {
+			switch(whence) {
 				case Whence.set:
 					fileDescriptor.cursor = offset;
 					break;
@@ -322,10 +184,7 @@ export function create(
 					fileDescriptor.cursor = fileDescriptor.cursor + offset;
 					break;
 				case Whence.end:
-					fileDescriptor.cursor = Math.max(
-						0,
-						mainContentBytes.byteLength - offset
-					);
+					fileDescriptor.cursor = Math.max(0, mainContentBytes.byteLength - offset);
 					break;
 			}
 			return BigInt(fileDescriptor.cursor);
@@ -334,10 +193,7 @@ export function create(
 			if (buffers.length === 0) {
 				return 0;
 			}
-			const maxBytesToRead = buffers.reduce<number>(
-				(prev, current) => prev + current.length,
-				0
-			);
+			const maxBytesToRead = buffers.reduce<number>((prev, current) => prev + current.length, 0);
 			let content: Uint8Array | undefined;
 			let offset: number | undefined;
 			let fileFD: DebugFileFD | undefined;
@@ -349,7 +205,7 @@ export function create(
 				assertFile(fileDescriptor);
 				fileFD = fileDescriptor;
 				content = textEncoder.encode(mainContent);
-				offset = fileDescriptor.cursor;
+				offset= fileDescriptor.cursor;
 			}
 			if (content === undefined || offset === undefined) {
 				throw new WasiError(Errno.badf);
@@ -379,10 +235,7 @@ export function create(
 			if (buffers.length === 1) {
 				buffer = buffers[0];
 			} else {
-				const byteLength: number = buffers.reduce<number>(
-					(prev, current) => prev + current.length,
-					0
-				);
+				const byteLength: number = buffers.reduce<number>((prev, current) => prev + current.length, 0);
 				buffer = new Uint8Array(byteLength);
 				let offset = 0;
 				for (const item of buffers) {
@@ -393,6 +246,7 @@ export function create(
 			apiClient.byteSink.write(uri, buffer);
 			return buffer.byteLength;
 		},
-		fd_close(_fileDescriptor: FileDescriptor): void {},
+		fd_close(_fileDescriptor: FileDescriptor): void {
+		},
 	});
 }
