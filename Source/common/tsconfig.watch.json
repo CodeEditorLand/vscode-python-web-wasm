@@ -6,9 +6,6 @@
 		"assumeChangesOnlyAffectDirectDependencies": true,
 		"tsBuildInfoFile":"../../out/common/watch.tsbuildInfo",
 	},
-	"include": [
-		"."
-	],
-	"references": [
-	]
+	"include": ["."],
+	"references": []
 }

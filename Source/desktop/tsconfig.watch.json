@@ -6,10 +6,6 @@
 		"assumeChangesOnlyAffectDirectDependencies": true,
 		"tsBuildInfoFile":"../../out/desktop/watch.tsbuildInfo",
 	},
-	"include": [
-		"."
-	],
-	"references": [
-		{ "path": "../common/tsconfig.watch.json" }
-	]
+	"include": ["."],
+	"references": [{ "path": "../common/tsconfig.watch.json" }]
 }
