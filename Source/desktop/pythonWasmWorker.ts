@@ -31,13 +31,13 @@ class NodeWasmRunner extends WasmRunner {
 				MessageRequests,
 				undefined
 			>(port),
-			path,
+			path
 		);
 	}
 
 	protected createClientConnection(port: MessagePort): ApiClientConnection {
 		return new ClientConnection<Requests, ApiClientConnection.ReadyParams>(
-			port,
+			port
 		);
 	}
 

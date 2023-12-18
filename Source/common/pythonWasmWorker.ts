@@ -76,7 +76,7 @@ export abstract class WasmRunner {
 		private readonly path: {
 			readonly join: (...paths: string[]) => string;
 			readonly sep: string;
-		},
+		}
 	) {
 		this.connection = connection;
 
@@ -90,7 +90,7 @@ export abstract class WasmRunner {
 		connection.onRequest("executeFile", (params) => {
 			return this.executePythonFile(
 				this.createClientConnection(params.syncPort),
-				URI.parse(params.file),
+				URI.parse(params.file)
 			);
 		});
 
@@ -99,7 +99,7 @@ export abstract class WasmRunner {
 				this.createClientConnection(params.syncPort),
 				URI.parse(params.file),
 				URI.from(params.uri),
-				params.terminator,
+				params.terminator
 			);
 		});
 
@@ -116,7 +116,7 @@ export abstract class WasmRunner {
 
 	protected async executePythonFile(
 		clientConnection: ApiClientConnection,
-		file: URI,
+		file: URI
 	): Promise<number> {
 		return this.run(clientConnection, file);
 	}
@@ -125,13 +125,13 @@ export abstract class WasmRunner {
 		clientConnection: ApiClientConnection,
 		file: URI,
 		debug: URI,
-		terminator: string,
+		terminator: string
 	): Promise<number> {
 		return this.run(clientConnection, file, debug, terminator);
 	}
 
 	protected async runRepl(
-		clientConnection: ApiClientConnection,
+		clientConnection: ApiClientConnection
 	): Promise<number> {
 		return this.run(clientConnection, undefined);
 	}
@@ -140,7 +140,7 @@ export abstract class WasmRunner {
 		clientConnection: ApiClientConnection,
 		file?: URI,
 		debug?: URI,
-		terminator?: string,
+		terminator?: string
 	): Promise<number> {
 		const apiClient = new ApiClient(clientConnection);
 		const stdio = (await apiClient.serviceReady()).stdio;
@@ -166,7 +166,7 @@ export abstract class WasmRunner {
 					toRun = path.join(
 						path.sep,
 						"workspace",
-						file.toString().substring(folderUri.toString().length),
+						file.toString().substring(folderUri.toString().length)
 					);
 				}
 			}
@@ -187,9 +187,9 @@ export abstract class WasmRunner {
 				: this.pythonRepository.with({
 						path: path.join(
 							this.pythonRepository.path,
-							this.pythonRoot,
+							this.pythonRoot
 						),
-				  });
+					});
 		// Usually we would mount the python installation into /usr but that doesn't work due to a bug
 		// in Python WASM right now. So we mount it into / but cheat a little with the path mapping to not
 		// have a mapping on root.
@@ -215,7 +215,7 @@ export abstract class WasmRunner {
 						fileDescriptorId,
 						this.path,
 						debug,
-						mainContent,
+						mainContent
 					);
 				},
 			});

@@ -31,7 +31,7 @@ function isCossOriginIsolated(): boolean {
 	}
 	void window.showWarningMessage(
 		`Executing Python needs cross origin isolation. You need to \nadd ?vscode-coi= to your browser URL to enable it.`,
-		{ modal: true },
+		{ modal: true }
 	);
 	return false;
 }
@@ -58,7 +58,7 @@ export class DebugConfigurationProvider implements DebugConfigurationProvider {
 	async resolveDebugConfiguration(
 		folder: WorkspaceFolder | undefined,
 		config: DebugConfiguration & DebugProperties,
-		token?: CancellationToken,
+		token?: CancellationToken
 	): Promise<DebugConfiguration | undefined> {
 		if (!isCossOriginIsolated()) {
 			return undefined;
@@ -84,7 +84,7 @@ export class DebugConfigurationProvider implements DebugConfigurationProvider {
 
 		if (!config.program) {
 			await window.showInformationMessage(
-				"Cannot find a Python file to debug",
+				"Cannot find a Python file to debug"
 			);
 			return undefined;
 		}
@@ -116,14 +116,14 @@ export class DebugAdapterDescriptorFactory
 {
 	constructor(
 		private readonly context: ExtensionContext,
-		private readonly preloadPromise: Promise<void>,
+		private readonly preloadPromise: Promise<void>
 	) {}
 	async createDebugAdapterDescriptor(
-		session: DebugSession,
+		session: DebugSession
 	): Promise<DebugAdapterDescriptor> {
 		await this.preloadPromise;
 		return new DebugAdapterInlineImplementation(
-			new DebugAdapter(session, this.context, RAL()),
+			new DebugAdapter(session, this.context, RAL())
 		);
 	}
 }
@@ -145,7 +145,7 @@ export function activate(context: ExtensionContext) {
 					await preloadPromise;
 					const pty = Terminals.getExecutionTerminal(
 						targetResource,
-						true,
+						true
 					);
 					const launcher = RAL().launcher.create();
 					const ctrlC = pty.onDidCtrlC(() => {
@@ -156,7 +156,7 @@ export function activate(context: ExtensionContext) {
 					await launcher.run(
 						context,
 						targetResource.toString(true),
-						pty,
+						pty
 					);
 					launcher
 						.onExit()
@@ -169,7 +169,7 @@ export function activate(context: ExtensionContext) {
 						});
 				}
 				return false;
-			},
+			}
 		),
 		commands.registerCommand(
 			"vscode-python-web-wasm.debug.debugEditorContents",
@@ -193,7 +193,7 @@ export function activate(context: ExtensionContext) {
 					});
 				}
 				return false;
-			},
+			}
 		),
 		commands.registerCommand(
 			"vscode-python-web-wasm.repl.start",
@@ -219,7 +219,7 @@ export function activate(context: ExtensionContext) {
 						Terminals.releaseReplTerminal(pty);
 					});
 				return true;
-			},
+			}
 		),
 		commands.registerCommand(
 			"vscode-python-web-wasm.debug.getProgramName",
@@ -229,18 +229,18 @@ export function activate(context: ExtensionContext) {
 						"Please enter the name of a python file in the workspace folder",
 					value: "app.py",
 				});
-			},
-		),
+			}
+		)
 	);
 
 	const provider = new DebugConfigurationProvider(preloadPromise);
 	context.subscriptions.push(
-		debug.registerDebugConfigurationProvider("python-web-wasm", provider),
+		debug.registerDebugConfigurationProvider("python-web-wasm", provider)
 	);
 
 	const factory = new DebugAdapterDescriptorFactory(context, preloadPromise);
 	context.subscriptions.push(
-		debug.registerDebugAdapterDescriptorFactory("python-web-wasm", factory),
+		debug.registerDebugAdapterDescriptorFactory("python-web-wasm", factory)
 	);
 
 	return preloadPromise;

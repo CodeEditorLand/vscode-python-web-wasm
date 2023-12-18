@@ -50,14 +50,14 @@ export class DebugCharacterDeviceDriver implements CharacterDeviceDriver {
 		// TODO: Handle inputs longer than maxBytesToRead
 		if (this._inputQueue.length > 0) {
 			return Promise.resolve(
-				this._encoder.encode(this._inputQueue.shift()!),
+				this._encoder.encode(this._inputQueue.shift()!)
 			);
 		}
 		// No input available, wait for it
 		return new Promise<Uint8Array>((resolve, reject) => {
 			const disposable = this._inputEmitter.event(() => {
 				const bytes = this._encoder.encode(
-					this._inputQueue.shift()! || "",
+					this._inputQueue.shift()! || ""
 				);
 				disposable.dispose();
 				resolve(bytes);

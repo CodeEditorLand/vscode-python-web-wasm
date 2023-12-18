@@ -16,7 +16,7 @@ export namespace Terminals {
 	const terminalsInUse: Map<string, TerminalInUseInfo> = new Map();
 
 	export function getTerminalInUse(
-		uuid: string,
+		uuid: string
 	): ServicePseudoTerminal | undefined {
 		const inUse = terminalsInUse.get(uuid);
 		return inUse?.[1];
@@ -24,7 +24,7 @@ export namespace Terminals {
 
 	export function getExecutionTerminal(
 		resource: Uri,
-		show: boolean,
+		show: boolean
 	): ServicePseudoTerminal {
 		const fileName = RAL().path.basename(resource.toString(true));
 		const terminalName = `Executing ${fileName}`;
@@ -43,7 +43,7 @@ export namespace Terminals {
 		terminalName: string,
 		header: string | undefined,
 		show: boolean,
-		preserveFocus: boolean,
+		preserveFocus: boolean
 	) {
 		// Check if we have an idle terminal
 		if (idleTerminals.size > 0) {
@@ -61,7 +61,7 @@ export namespace Terminals {
 				}
 				if (header !== undefined) {
 					pty.writeString(
-						formatMessageForTerminal(header, true, true),
+						formatMessageForTerminal(header, true, true)
 					);
 				}
 				terminalsInUse.set(pty.id, [terminal, pty]);
@@ -93,7 +93,7 @@ export namespace Terminals {
 
 	export function releaseExecutionTerminal(
 		pty: ServicePseudoTerminal,
-		terminated: boolean = false,
+		terminated: boolean = false
 	): void {
 		const footer = terminated
 			? `Python execution got terminated. The terminal will be reused, press any key to close it.`
@@ -103,7 +103,7 @@ export namespace Terminals {
 
 	export function releaseReplTerminal(
 		pty: ServicePseudoTerminal,
-		terminated: boolean = false,
+		terminated: boolean = false
 	): void {
 		const footer = terminated
 			? `Repl execution got terminated. The terminal will be reused, press any key to close it.`
@@ -143,7 +143,7 @@ export namespace Terminals {
 	function formatMessageForTerminal(
 		message: string,
 		leadingNewLine: boolean,
-		trailingNewLine: boolean,
+		trailingNewLine: boolean
 	): string {
 		return `${
 			leadingNewLine ? "\r\n\r\n" : ""

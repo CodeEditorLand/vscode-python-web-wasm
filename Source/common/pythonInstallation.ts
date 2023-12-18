@@ -39,7 +39,7 @@ namespace PythonInstallation {
 			pythonRepositoryUri = Uri.parse(pythonRepository);
 		} catch (error) {
 			Tracer.append(
-				`${pythonRepository} is not a valid URI. Falling back to default Python repository ${defaultPythonRepository}`,
+				`${pythonRepository} is not a valid URI. Falling back to default Python repository ${defaultPythonRepository}`
 			);
 		}
 
@@ -60,7 +60,7 @@ namespace PythonInstallation {
 			}
 			const api = await RemoteRepositories.getApi();
 			pythonRepositoryUri = api.getVirtualUri(
-				pythonRepositoryUri.with({ authority: "github" }),
+				pythonRepositoryUri.with({ authority: "github" })
 			);
 		}
 
@@ -69,24 +69,24 @@ namespace PythonInstallation {
 			try {
 				const binaryLocation = createPythonWasmUri(
 					pythonRepositoryUri,
-					pythonRoot,
+					pythonRoot
 				);
 				await workspace.fs.stat(binaryLocation);
 				Tracer.append(`Using Python from ${pythonRepositoryUri}`);
 			} catch (error) {
 				Tracer.append(
-					`Failed to load Python from ${pythonRepositoryUri}`,
+					`Failed to load Python from ${pythonRepositoryUri}`
 				);
 				const api = await RemoteRepositories.getApi();
 				pythonRepositoryUri = api.getVirtualUri(
 					Uri.parse(defaultPythonRepository).with({
 						authority: "github",
-					}),
+					})
 				);
 				pythonRoot = defaultPythonRoot;
 				isDefault = true;
 				Tracer.append(
-					`Falling back to default Python repository ${pythonRepositoryUri}`,
+					`Falling back to default Python repository ${pythonRepositoryUri}`
 				);
 			}
 		}
@@ -126,12 +126,12 @@ namespace PythonInstallation {
 		// We can only preload a repository if we are using a vscode virtual file system.
 		if (isVSCodeVFS && _repositoryWatcher === undefined) {
 			const fsWatcher = workspace.createFileSystemWatcher(
-				new RelativePattern(repository, "*"),
+				new RelativePattern(repository, "*")
 			);
 			_repositoryWatcher = fsWatcher.onDidChange(async (uri) => {
 				if (uri.toString() === repository.toString()) {
 					Tracer.append(
-						`Repository ${repository.toString()} changed. Pre-load it again.`,
+						`Repository ${repository.toString()} changed. Pre-load it again.`
 					);
 					_preload = undefined;
 					preload().catch(console.error);
@@ -147,7 +147,7 @@ namespace PythonInstallation {
 					await remoteHubApi.loadWorkspaceContents(repository);
 				}
 				Tracer.append(
-					`Successfully loaded workspace content for repository ${repository.toString()}`,
+					`Successfully loaded workspace content for repository ${repository.toString()}`
 				);
 			}
 			const binaryLocation =
@@ -161,7 +161,7 @@ namespace PythonInstallation {
 					const buffer = new SharedArrayBuffer(bytes.byteLength);
 					new Uint8Array(buffer).set(bytes);
 					Tracer.append(
-						`Successfully cached WASM file ${binaryLocation.toString()}`,
+						`Successfully cached WASM file ${binaryLocation.toString()}`
 					);
 					wasmBytes = buffer;
 				} else {
@@ -170,7 +170,7 @@ namespace PythonInstallation {
 			} catch (error) {
 				wasmBytes = undefined;
 				Tracer.append(
-					`Caching WASM file ${binaryLocation.toString()} failed`,
+					`Caching WASM file ${binaryLocation.toString()} failed`
 				);
 				console.error(error);
 			}
@@ -178,7 +178,7 @@ namespace PythonInstallation {
 			Tracer.append(
 				`Loading workspace content for repository ${repository.toString()} failed: ${
 					error instanceof Error ? error.toString() : "Unknown reason"
-				}`,
+				}`
 			);
 			console.error(error);
 		}

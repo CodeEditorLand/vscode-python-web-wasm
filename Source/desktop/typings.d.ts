@@ -68,7 +68,7 @@ declare namespace WebAssembly {
 		new (bytes: BufferSource): Module;
 		customSections(
 			moduleObject: Module,
-			sectionName: string,
+			sectionName: string
 		): ArrayBuffer[];
 		exports(moduleObject: Module): ModuleExportDescriptor[];
 		imports(moduleObject: Module): ModuleImportDescriptor[];
@@ -145,11 +145,11 @@ declare namespace WebAssembly {
 	function compile(bytes: BufferSource): Promise<Module>;
 	function instantiate(
 		bytes: BufferSource,
-		importObject?: Imports,
+		importObject?: Imports
 	): Promise<WebAssemblyInstantiatedSource>;
 	function instantiate(
 		moduleObject: Module,
-		importObject?: Imports,
+		importObject?: Imports
 	): Promise<Instance>;
 	function validate(bytes: BufferSource): boolean;
 }

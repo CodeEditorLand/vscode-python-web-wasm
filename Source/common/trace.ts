@@ -18,7 +18,7 @@ export namespace Tracer {
 	export function append(message: string): void {
 		const channel = getChannel();
 		channel.appendLine(
-			`[Info - ${new Date().toLocaleTimeString()}] ${message}`,
+			`[Info - ${new Date().toLocaleTimeString()}] ${message}`
 		);
 	}
 }

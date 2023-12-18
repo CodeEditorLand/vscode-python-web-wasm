@@ -25,11 +25,11 @@ export class DesktopLauncher extends BaseLauncher {
 	}
 
 	protected async createMessageConnection(
-		context: ExtensionContext,
+		context: ExtensionContext
 	): Promise<MessageConnection> {
 		const filename = Uri.joinPath(
 			context.extensionUri,
-			"./dist/desktop/pythonWasmWorker.js",
+			"./dist/desktop/pythonWasmWorker.js"
 		).fsPath;
 		this.worker = new Worker(filename);
 		const channel = new MessageChannel();
@@ -57,7 +57,7 @@ export class DesktopLauncher extends BaseLauncher {
 	}
 
 	protected async createSyncConnection(
-		messageConnection: MessageConnection,
+		messageConnection: MessageConnection
 	): Promise<[ApiServiceConnection, any]> {
 		const channel = new MessageChannel();
 		const result = new ServiceConnection<

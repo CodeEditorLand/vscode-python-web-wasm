@@ -4,7 +4,7 @@
 		"noUnusedLocals": false,
 		"noUnusedParameters": false,
 		"assumeChangesOnlyAffectDirectDependencies": true,
-		"tsBuildInfoFile":"../../out/web/watch.tsbuildInfo",
+		"tsBuildInfoFile": "../../out/web/watch.tsbuildInfo"
 	},
 	"include": ["."],
 	"exclude": ["test"],
