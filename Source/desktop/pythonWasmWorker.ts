@@ -10,13 +10,13 @@ import { MessagePort, parentPort } from "worker_threads";
 
 import {
 	ClientConnection,
-	Requests,
 	MessageConnection as SyncMessageConnection,
+	Requests,
 } from "@vscode/sync-api-common/node";
 import { ApiClientConnection, WASI } from "@vscode/wasm-wasi/node";
 
+import { MessageNotifications, MessageRequests } from "../common/messages";
 import { WasmRunner } from "../common/pythonWasmWorker";
-import { MessageRequests, MessageNotifications } from "../common/messages";
 
 if (parentPort === null) {
 	process.exit();
@@ -31,13 +31,13 @@ class NodeWasmRunner extends WasmRunner {
 				MessageRequests,
 				undefined
 			>(port),
-			path
+			path,
 		);
 	}
 
 	protected createClientConnection(port: MessagePort): ApiClientConnection {
 		return new ClientConnection<Requests, ApiClientConnection.ReadyParams>(
-			port
+			port,
 		);
 	}
 

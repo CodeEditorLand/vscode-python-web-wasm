@@ -6,30 +6,29 @@
 import { URI } from "vscode-uri";
 
 import {
-	ApiClient,
+	ApiShape,
 	BaseFileDescriptor,
 	BigInts,
 	DeviceIds,
 	Errno,
+	FileDescriptor,
+	FileSystemDeviceDriver,
+	Filetype,
+	NoSysDeviceDriver,
+	RAL,
+	Rights,
+	VSCodeFS,
+	WasiError,
+	Whence,
 	fd,
 	fdflags,
 	fdstat,
-	FileDescriptor,
 	filestat,
-	FileSystemDeviceDriver,
-	Filetype,
 	filetype,
 	lookupflags,
-	NoSysDeviceDriver,
 	oflags,
-	RAL,
-	Rights,
 	rights,
 	size,
-	WasiError,
-	Whence,
-	VSCodeFS,
-	ApiShape,
 } from "@vscode/wasm-wasi";
 
 class DebugFileDescriptor extends BaseFileDescriptor {
@@ -40,7 +39,7 @@ class DebugFileDescriptor extends BaseFileDescriptor {
 		rights_base: rights,
 		rights_inheriting: rights,
 		fdflags: fdflags,
-		inode: bigint
+		inode: bigint,
 	) {
 		super(
 			deviceId,
@@ -49,7 +48,7 @@ class DebugFileDescriptor extends BaseFileDescriptor {
 			rights_base,
 			rights_inheriting,
 			fdflags,
-			inode
+			inode,
 		);
 	}
 }
@@ -61,7 +60,7 @@ class DebugCharacterDeviceFD extends DebugFileDescriptor {
 		rights_base: rights,
 		rights_inheriting: rights,
 		fdflags: fdflags,
-		inode: bigint
+		inode: bigint,
 	) {
 		super(
 			deviceId,
@@ -70,7 +69,7 @@ class DebugCharacterDeviceFD extends DebugFileDescriptor {
 			rights_base,
 			rights_inheriting,
 			fdflags,
-			inode
+			inode,
 		);
 	}
 }
@@ -82,7 +81,7 @@ class DebugDirectoryFD extends DebugFileDescriptor {
 		rights_base: rights,
 		rights_inheriting: rights,
 		fdflags: fdflags,
-		inode: bigint
+		inode: bigint,
 	) {
 		super(
 			deviceId,
@@ -91,7 +90,7 @@ class DebugDirectoryFD extends DebugFileDescriptor {
 			rights_base,
 			rights_inheriting,
 			fdflags,
-			inode
+			inode,
 		);
 	}
 }
@@ -105,7 +104,7 @@ class DebugFileFD extends DebugFileDescriptor {
 		rights_base: rights,
 		rights_inheriting: rights,
 		fdflags: fdflags,
-		inode: bigint
+		inode: bigint,
 	) {
 		super(
 			deviceId,
@@ -114,7 +113,7 @@ class DebugFileFD extends DebugFileDescriptor {
 			rights_base,
 			rights_inheriting,
 			fdflags,
-			inode
+			inode,
 		);
 		this.cursor = 0;
 	}
@@ -129,7 +128,7 @@ export function create(
 		readonly sep: string;
 	},
 	uri: URI,
-	mainContent: string
+	mainContent: string,
 ): FileSystemDeviceDriver {
 	const mainContentBytes = textEncoder.encode(mainContent);
 	const deviceId = DeviceIds.next();
@@ -147,7 +146,7 @@ export function create(
 				VSCodeFS.DirectoryRights.base,
 				VSCodeFS.DirectoryRights.inheriting,
 				0,
-				0n
+				0n,
 			);
 		}
 		return _root;
@@ -162,7 +161,7 @@ export function create(
 				VSCodeFS.FileRights.base,
 				VSCodeFS.FileRights.inheriting,
 				0,
-				1n
+				1n,
 			);
 		}
 		return _main;
@@ -179,7 +178,7 @@ export function create(
 				InputRights,
 				Rights.None,
 				0,
-				2n
+				2n,
 			);
 		}
 		return _input;
@@ -196,7 +195,7 @@ export function create(
 				OutputRights,
 				Rights.None,
 				0,
-				3n
+				3n,
 			);
 		}
 		return _output;
@@ -217,7 +216,7 @@ export function create(
 		}
 	}
 	function assertDebugFileDescriptor(
-		fileDescriptor: FileDescriptor
+		fileDescriptor: FileDescriptor,
 	): asserts fileDescriptor is DebugFileDescriptor {
 		if (!(fileDescriptor instanceof DebugFileDescriptor)) {
 			throw new WasiError(Errno.badf);
@@ -225,7 +224,7 @@ export function create(
 	}
 
 	function assertCharacterDevice(
-		fileDescriptor: FileDescriptor
+		fileDescriptor: FileDescriptor,
 	): asserts fileDescriptor is DebugCharacterDeviceFD {
 		if (!(fileDescriptor instanceof DebugCharacterDeviceFD)) {
 			throw new WasiError(Errno.badf);
@@ -233,7 +232,7 @@ export function create(
 	}
 
 	function assertDirectory(
-		fileDescriptor: FileDescriptor
+		fileDescriptor: FileDescriptor,
 	): asserts fileDescriptor is DebugDirectoryFD {
 		if (!(fileDescriptor instanceof DebugDirectoryFD)) {
 			throw new WasiError(Errno.badf);
@@ -241,7 +240,7 @@ export function create(
 	}
 
 	function assertFile(
-		fileDescriptor: FileDescriptor
+		fileDescriptor: FileDescriptor,
 	): asserts fileDescriptor is DebugFileFD {
 		if (!(fileDescriptor instanceof DebugFileFD)) {
 			throw new WasiError(Errno.badf);
@@ -267,7 +266,7 @@ export function create(
 			_oflags: oflags,
 			fs_rights_base: rights,
 			fs_rights_inheriting: rights,
-			fdflags: fdflags
+			fdflags: fdflags,
 		): FileDescriptor {
 			assertDirectory(parentDescriptor);
 			if (parentDescriptor !== rootFd()) {
@@ -284,7 +283,7 @@ export function create(
 		},
 		fd_filestat_get(
 			fileDescriptor: FileDescriptor,
-			result: filestat
+			result: filestat,
 		): void {
 			result.dev = fileDescriptor.deviceId;
 			result.ino = fileDescriptor.inode;
@@ -305,7 +304,7 @@ export function create(
 		fd_seek(
 			fileDescriptor: FileDescriptor,
 			_offset: bigint,
-			whence: number
+			whence: number,
 		): bigint {
 			// we can't really seek on the input / output character device.
 			if (fileDescriptor instanceof DebugCharacterDeviceFD) {
@@ -324,7 +323,7 @@ export function create(
 				case Whence.end:
 					fileDescriptor.cursor = Math.max(
 						0,
-						mainContentBytes.byteLength - offset
+						mainContentBytes.byteLength - offset,
 					);
 					break;
 			}
@@ -336,7 +335,7 @@ export function create(
 			}
 			const maxBytesToRead = buffers.reduce<number>(
 				(prev, current) => prev + current.length,
-				0
+				0,
 			);
 			let content: Uint8Array | undefined;
 			let offset: number | undefined;
@@ -381,7 +380,7 @@ export function create(
 			} else {
 				const byteLength: number = buffers.reduce<number>(
 					(prev, current) => prev + current.length,
-					0
+					0,
 				);
 				buffer = new Uint8Array(byteLength);
 				let offset = 0;

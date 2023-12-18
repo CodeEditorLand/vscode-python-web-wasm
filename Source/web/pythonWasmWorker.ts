@@ -6,13 +6,13 @@ import path from "path-browserify";
 
 import {
 	ClientConnection,
-	Requests,
 	MessageConnection as SyncMessageConnection,
+	Requests,
 } from "@vscode/sync-api-common/browser";
 import { ApiClientConnection, WASI } from "@vscode/wasm-wasi/browser";
 
-import { WasmRunner, MessageConnection } from "../common/pythonWasmWorker";
-import { MessageRequests, MessageNotifications } from "../common/messages";
+import { MessageNotifications, MessageRequests } from "../common/messages";
+import { WasmRunner } from "../common/pythonWasmWorker";
 
 class WebWasmRunner extends WasmRunner {
 	constructor(port: MessagePort) {
@@ -23,13 +23,13 @@ class WebWasmRunner extends WasmRunner {
 				MessageRequests,
 				undefined
 			>(port),
-			path
+			path,
 		);
 	}
 
 	protected createClientConnection(port: MessagePort): ApiClientConnection {
 		return new ClientConnection<Requests, ApiClientConnection.ReadyParams>(
-			port
+			port,
 		);
 	}
 

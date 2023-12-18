@@ -4,8 +4,8 @@
  * ------------------------------------------------------------------------------------------ */
 import path from "path";
 
-import RAL from "../common/ral";
 import { Launcher } from "../common/launcher";
+import RAL from "../common/ral";
 import { DesktopLauncher } from "./launcher";
 
 const _ril: RAL = Object.freeze<RAL>({

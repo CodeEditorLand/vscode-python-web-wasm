@@ -5,12 +5,12 @@
 
 import * as uuid from "uuid";
 
-import { Uri, Event, EventEmitter } from "vscode";
 import {
 	CharacterDeviceDriver,
 	FileDescriptorDescription,
 	RAL as SyncRal,
 } from "@vscode/sync-api-service";
+import { Event, EventEmitter, Uri } from "vscode";
 
 export class DebugCharacterDeviceDriver implements CharacterDeviceDriver {
 	public readonly uri: Uri;
@@ -50,14 +50,14 @@ export class DebugCharacterDeviceDriver implements CharacterDeviceDriver {
 		// TODO: Handle inputs longer than maxBytesToRead
 		if (this._inputQueue.length > 0) {
 			return Promise.resolve(
-				this._encoder.encode(this._inputQueue.shift()!)
+				this._encoder.encode(this._inputQueue.shift()!),
 			);
 		}
 		// No input available, wait for it
 		return new Promise<Uint8Array>((resolve, reject) => {
 			const disposable = this._inputEmitter.event(() => {
 				const bytes = this._encoder.encode(
-					this._inputQueue.shift()! || ""
+					this._inputQueue.shift()! || "",
 				);
 				disposable.dispose();
 				resolve(bytes);

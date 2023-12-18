@@ -3,20 +3,19 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  * ------------------------------------------------------------------------------------------ */
 
-import { ExtensionContext, Terminal, Event, EventEmitter } from "vscode";
+import { Event, EventEmitter, ExtensionContext, Terminal } from "vscode";
 
 import {
 	ApiServiceConnection,
 	BaseMessageConnection,
 	CharacterDeviceDriver,
 	DTOs,
-	ServicePseudoTerminal,
 } from "@vscode/sync-api-service";
 import { ApiService } from "@vscode/sync-api-service";
 
-import PythonInstallation from "./pythonInstallation";
-import { MessageRequests, MessageNotifications } from "./messages";
 import { DebugCharacterDeviceDriver } from "./debugCharacterDeviceDriver";
+import { MessageNotifications, MessageRequests } from "./messages";
+import PythonInstallation from "./pythonInstallation";
 
 export type MessageConnection = BaseMessageConnection<
 	MessageRequests,
@@ -55,7 +54,7 @@ export interface Launcher {
 	run(
 		context: ExtensionContext,
 		program: string,
-		stdio: CharacterDeviceDriver
+		stdio: CharacterDeviceDriver,
 	): Promise<void>;
 
 	/**
@@ -72,7 +71,7 @@ export interface Launcher {
 		program: string,
 		stdio: CharacterDeviceDriver,
 		debugPorts: DebugCharacterDeviceDriver,
-		terminator: String
+		terminator: string,
 	): Promise<void>;
 
 	/**
@@ -84,7 +83,7 @@ export interface Launcher {
 	 */
 	startRepl(
 		context: ExtensionContext,
-		stdio: CharacterDeviceDriver
+		stdio: CharacterDeviceDriver,
 	): Promise<void>;
 
 	/**
@@ -130,7 +129,7 @@ export abstract class BaseLauncher {
 	public run(
 		context: ExtensionContext,
 		program: string,
-		stdio: CharacterDeviceDriver
+		stdio: CharacterDeviceDriver,
 	): Promise<void> {
 		return this.doRun("run", context, stdio, program);
 	}
@@ -140,7 +139,7 @@ export abstract class BaseLauncher {
 		program: string,
 		stdio: CharacterDeviceDriver,
 		debugPorts: DebugCharacterDeviceDriver,
-		terminator: string
+		terminator: string,
 	): Promise<void> {
 		return this.doRun(
 			"debug",
@@ -148,13 +147,13 @@ export abstract class BaseLauncher {
 			stdio,
 			program,
 			debugPorts,
-			terminator
+			terminator,
 		);
 	}
 
 	public startRepl(
 		context: ExtensionContext,
-		stdio: CharacterDeviceDriver
+		stdio: CharacterDeviceDriver,
 	): Promise<void> {
 		return this.doRun("repl", context, stdio);
 	}
@@ -163,7 +162,7 @@ export abstract class BaseLauncher {
 		mode: "run",
 		context: ExtensionContext,
 		stdio: CharacterDeviceDriver,
-		program: string
+		program: string,
 	): Promise<void>;
 	private doRun(
 		mode: "debug",
@@ -171,12 +170,12 @@ export abstract class BaseLauncher {
 		stdio: CharacterDeviceDriver | undefined,
 		program: string,
 		debugPorts: DebugCharacterDeviceDriver,
-		terminator: string
+		terminator: string,
 	): Promise<void>;
 	private doRun(
 		mode: "repl",
 		context: ExtensionContext,
-		stdio: CharacterDeviceDriver
+		stdio: CharacterDeviceDriver,
 	): Promise<void>;
 	private async doRun(
 		mode: "run" | "debug" | "repl",
@@ -184,7 +183,7 @@ export abstract class BaseLauncher {
 		stdio: CharacterDeviceDriver,
 		program?: string,
 		debugPorts?: DebugCharacterDeviceDriver,
-		terminator?: string
+		terminator?: string,
 	): Promise<void> {
 		this.state = { mode, stdio, program };
 		const [{ repository, root }, sharedWasmBytes, messageConnection] =
@@ -213,7 +212,7 @@ export abstract class BaseLauncher {
 			{
 				exitHandler: (_rval) => {},
 				echoName: false,
-			}
+			},
 		);
 
 		apiService.registerCharacterDeviceDriver(stdio, true);
@@ -227,10 +226,10 @@ export abstract class BaseLauncher {
 				? messageConnection.sendRequest(
 						"executeFile",
 						{ syncPort: port, file: program! },
-						[port]
-					)
+						[port],
+				  )
 				: mode === "debug"
-					? messageConnection.sendRequest(
+				  ? messageConnection.sendRequest(
 							"debugFile",
 							{
 								syncPort: port,
@@ -238,13 +237,13 @@ export abstract class BaseLauncher {
 								uri: debugPorts!.uri,
 								terminator: terminator!,
 							},
-							[port]
-						)
-					: messageConnection.sendRequest(
+							[port],
+					  )
+				  : messageConnection.sendRequest(
 							"runRepl",
 							{ syncPort: port },
-							[port]
-						);
+							[port],
+					  );
 
 		runRequest
 			.then((rval) => {
@@ -275,11 +274,11 @@ export abstract class BaseLauncher {
 	}
 
 	protected abstract createMessageConnection(
-		context: ExtensionContext
+		context: ExtensionContext,
 	): Promise<MessageConnection>;
 
 	protected abstract createSyncConnection(
-		messageConnection: MessageConnection
+		messageConnection: MessageConnection,
 	): Promise<[ApiServiceConnection, any]>;
 
 	protected abstract terminateConnection(): Promise<void>;

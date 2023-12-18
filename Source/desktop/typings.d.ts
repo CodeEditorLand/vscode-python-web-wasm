@@ -16,7 +16,7 @@ and limitations under the License.
 // copied from lib.webworker.d.ts from TS installation.
 type BufferSource = ArrayBufferView | ArrayBuffer;
 declare namespace WebAssembly {
-	interface CompileError extends Error {}
+	type CompileError = Error;
 
 	var CompileError: {
 		prototype: CompileError;
@@ -43,7 +43,7 @@ declare namespace WebAssembly {
 		new (module: Module, importObject?: Imports): Instance;
 	};
 
-	interface LinkError extends Error {}
+	type LinkError = Error;
 
 	var LinkError: {
 		prototype: LinkError;
@@ -61,20 +61,20 @@ declare namespace WebAssembly {
 		new (descriptor: MemoryDescriptor): Memory;
 	};
 
-	interface Module {}
+	type Module = {};
 
 	var Module: {
 		prototype: Module;
 		new (bytes: BufferSource): Module;
 		customSections(
 			moduleObject: Module,
-			sectionName: string
+			sectionName: string,
 		): ArrayBuffer[];
 		exports(moduleObject: Module): ModuleExportDescriptor[];
 		imports(moduleObject: Module): ModuleImportDescriptor[];
 	};
 
-	interface RuntimeError extends Error {}
+	type RuntimeError = Error;
 
 	var RuntimeError: {
 		prototype: RuntimeError;
@@ -145,11 +145,11 @@ declare namespace WebAssembly {
 	function compile(bytes: BufferSource): Promise<Module>;
 	function instantiate(
 		bytes: BufferSource,
-		importObject?: Imports
+		importObject?: Imports,
 	): Promise<WebAssemblyInstantiatedSource>;
 	function instantiate(
 		moduleObject: Module,
-		importObject?: Imports
+		importObject?: Imports,
 	): Promise<Instance>;
 	function validate(bytes: BufferSource): boolean;
 }

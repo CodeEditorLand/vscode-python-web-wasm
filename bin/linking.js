@@ -4,8 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 //@ts-check
 
-"use strict";
-
 const path = require("path");
 const shell = require("shelljs");
 
@@ -21,7 +19,7 @@ const unlink = promisify(fs.unlink);
  * @param {string} source
  * @param {string} dest
  */
-const hardLink = (exports.hardLink = async function (source, dest) {
+const hardLink = (exports.hardLink = async (source, dest) => {
 	const sourceStat = await stat(source);
 	if (sourceStat.isFile()) {
 		shell.ln("-f", source, dest);
@@ -37,7 +35,7 @@ const hardLink = (exports.hardLink = async function (source, dest) {
 	}
 });
 
-const tryHardLink = (exports.tryHardLink = async function (source, dest) {
+const tryHardLink = (exports.tryHardLink = async (source, dest) => {
 	console.log(`Linking recursively ${source} -> ${dest}`);
 	if (await exists(dest)) {
 		shell.rm("-rf", dest);
@@ -45,7 +43,7 @@ const tryHardLink = (exports.tryHardLink = async function (source, dest) {
 	await hardLink(source, dest);
 });
 
-exports.softLink = async function (source, dest) {
+exports.softLink = async (source, dest) => {
 	if (await exists(dest)) {
 		shell.rm("-rf", dest);
 	}

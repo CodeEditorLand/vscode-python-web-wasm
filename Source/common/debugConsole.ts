@@ -5,12 +5,12 @@
 
 import * as uuid from "uuid";
 
-import { Event, EventEmitter, Uri } from "vscode";
 import {
 	CharacterDeviceDriver,
 	FileDescriptorDescription,
 	RAL,
 } from "@vscode/sync-api-service";
+import { Event, EventEmitter, Uri } from "vscode";
 
 export class DebugConsole implements CharacterDeviceDriver {
 	public readonly uri: Uri;

@@ -5,11 +5,11 @@
 
 import { ExtensionContext, Uri } from "vscode";
 
-import { ApiServiceConnection, Requests } from "@vscode/sync-api-service";
 import {
-	ServiceConnection,
 	MessageConnection as SyncMessageConnection,
+	ServiceConnection,
 } from "@vscode/sync-api-common/browser";
+import { ApiServiceConnection, Requests } from "@vscode/sync-api-service";
 
 import { BaseLauncher, MessageConnection } from "../common/launcher";
 import { MessageNotifications, MessageRequests } from "../common/messages";
@@ -22,11 +22,11 @@ export class WebLauncher extends BaseLauncher {
 	}
 
 	protected async createMessageConnection(
-		context: ExtensionContext
+		context: ExtensionContext,
 	): Promise<MessageConnection> {
 		const filename = Uri.joinPath(
 			context.extensionUri,
-			"./dist/web/pythonWasmWorker.js"
+			"./dist/web/pythonWasmWorker.js",
 		).toString();
 		this.worker = new Worker(filename);
 		const channel = new MessageChannel();
@@ -57,7 +57,7 @@ export class WebLauncher extends BaseLauncher {
 	}
 
 	protected async createSyncConnection(
-		messageConnection: MessageConnection
+		messageConnection: MessageConnection,
 	): Promise<[ApiServiceConnection, any]> {
 		const channel = new MessageChannel();
 		const result = new ServiceConnection<

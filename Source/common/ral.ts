@@ -3,8 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  * ------------------------------------------------------------------------------------------ */
 
-import type { IPath } from "./path";
 import type { Launcher } from "./launcher";
+import type { IPath } from "./path";
 interface RAL {
 	readonly launcher: {
 		create(): Launcher;

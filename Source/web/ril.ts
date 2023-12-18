@@ -5,8 +5,8 @@
 
 import path from "path-browserify";
 
-import RAL from "../common/ral";
 import { Launcher } from "../common/launcher";
+import RAL from "../common/ral";
 import { WebLauncher } from "./launcher";
 
 const _ril: RAL = Object.freeze<RAL>({
