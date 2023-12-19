@@ -150,7 +150,7 @@
 		"@types/uuid": "9.0.7",
 		"@types/vscode": "1.85.0",
 		"@vscode/vsce": "2.22.0",
-		"esbuild": "0.19.9",
+		"esbuild": "0.19.10",
 		"localtunnel": "2.0.2",
 		"rimraf": "5.0.5",
 		"serve": "14.2.1",
