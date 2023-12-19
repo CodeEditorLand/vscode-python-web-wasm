@@ -22,15 +22,15 @@ const TracebackFrameRegex = /^\s+File "(.+)", line (\d+)/;
 const ScrapeDirOutputRegex = /\[(.*)\]/;
 const BreakpointRegex = /Breakpoint (\d+) at (.+):(\d+)/;
 const PossibleStepExceptionRegex = /^\w+:\s+.*\r*\n>/;
-const PrintExceptionMessage = `debug_pdb_print_exc_message`;
+const PrintExceptionMessage = "debug_pdb_print_exc_message";
 const SetupExceptionMessage = `alias debug_pdb_print_exc_message !import sys; print(sys.exc_info()[1], file=open('/$debug/output', 'w', -1, 'utf-8'))`;
-const PrintExceptionTraceback = `debug_pdb_print_exc_traceback`;
+const PrintExceptionTraceback = "debug_pdb_print_exc_traceback";
 const SetupExceptionTraceback = `alias debug_pdb_print_exc_traceback !import traceback; import sys; traceback.print_exc(file=open('/$debug/output', 'w', -1, 'utf-8'))`;
-const PrintExceptionVarMessage = `debug_pdb_print_exc_var_message`;
+const PrintExceptionVarMessage = "debug_pdb_print_exc_var_message";
 const SetupExceptionVarMessage = `alias debug_pdb_print_exc_var_message !import sys; print(__exception__[1], file=open('/$debug/output', 'w', -1, 'utf-8'))`;
-const PrintExceptionVarTraceback = `debug_pdb_print_exc_var_traceback`;
+const PrintExceptionVarTraceback = "debug_pdb_print_exc_var_traceback";
 const SetupExceptionVarTraceback = `alias debug_pdb_print_exc_var_traceback !import traceback; import sys; traceback.print_exception(__exception__[1], file=open('/$debug/output', 'w', -1, 'utf-8'))`;
-const PdbTerminator = `(Pdb) `;
+const PdbTerminator = "(Pdb) ";
 const UncaughtExceptionOutput =
 	"Uncaught exception. Entering post mortem debugging";
 const ProgramFinishedOutput = "The program finished and will be restarted";
@@ -99,7 +99,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 				(error) => {
 					// Todo@dirkb Wie should think about a output channel to log this
 					console.error(
-						`Unexpected error occured when handling debugger request`,
+						"Unexpected error occured when handling debugger request",
 						error,
 					);
 				},
@@ -220,7 +220,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 		breakpointHit?: DebugProtocol.Breakpoint,
 		text?: string,
 	) {
-		if (breakpointHit && breakpointHit.id) {
+		if (breakpointHit?.id) {
 			this._sendEvent<DebugProtocol.StoppedEvent>({
 				type: "event",
 				seq: 1,
@@ -258,7 +258,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 
 	private _handleDisconnect(message: DebugProtocol.DisconnectRequest) {
 		this._terminate();
-		this._sendToUserConsole(`Process exited.`);
+		this._sendToUserConsole("Process exited.");
 		this._sendResponse<DebugProtocol.DisconnectResponse>({
 			type: "response",
 			request_seq: message.seq,
@@ -755,7 +755,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 
 		// The topmost frame needs to be 'my code' or we should step out of the current
 		// frame
-		if (frames.length > 0 && !this._isMyCode(frames[0].source!.path!)) {
+		if (frames.length > 0 && !this._isMyCode(frames[0].source?.path!)) {
 			return this._stepOutOf();
 		}
 
@@ -870,7 +870,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 
 		// Wait for debuggee to emit first bit of output before continuing. First bit of output may be an exception that the program crashed
 		const launchOutput = await this._waitForPdbOutput("command", () => {
-			return this._launcher!.debug(
+			return this._launcher?.debug(
 				this.context,
 				args.program.replace(/\\/g, "/"),
 				stdio,
@@ -886,7 +886,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 		await this._executecommand(SetupExceptionVarTraceback);
 
 		// Send a message to the debug console to indicate started debugging
-		this._sendToDebugConsole(`PDB debugger connected.\r\n`);
+		this._sendToDebugConsole("PDB debugger connected.\r\n");
 
 		// PDB should have stopped at the entry point and printed out the first line. It may have also just crashed.
 
@@ -900,7 +900,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 		});
 
 		// Indicate okay to send configuration done
-		this._launchCompleteResolver!(launchOutput);
+		this._launchCompleteResolver?.(launchOutput);
 	}
 
 	private _handlePathMappings(mappings: PathMapping) {
@@ -915,7 +915,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 			}
 			this._workspaceUri2WasmPath.set(`${uri.toString()}/`, key);
 		}
-		this._pathMappingsCompleteResolver!();
+		this._pathMappingsCompleteResolver?.();
 	}
 
 	private async _stepInto() {
@@ -1002,7 +1002,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 		// Special case `print(` to just call print. Otherwise we get
 		// the return value of 'None' in the output, and it's unlikely the user
 		// wanted that
-		const command = message.arguments.expression.startsWith(`print(`)
+		const command = message.arguments.expression.startsWith("print(")
 			? message.arguments.expression
 			: `p ${message.arguments.expression}`;
 		const output = await this._executecommand(command);
@@ -1036,7 +1036,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 		if (!msg || msg === "None\n") {
 			// See if we have __exception__ in our locals
 			const dir = await this._executecommand("dir()");
-			if (dir && dir.includes("__exception__")) {
+			if (dir?.includes("__exception__")) {
 				msg = await this._executecommand(PrintExceptionVarMessage);
 				traceback = await this._executecommand(
 					PrintExceptionVarTraceback,

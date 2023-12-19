@@ -198,7 +198,7 @@ namespace PythonInstallation {
 			await _preload;
 		}
 		if (wasmBytes === undefined) {
-			throw new Error(`Load python.wasm file failed`);
+			throw new Error("Load python.wasm file failed");
 		}
 		return wasmBytes;
 	}

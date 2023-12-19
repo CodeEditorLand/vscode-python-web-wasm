@@ -234,7 +234,7 @@ export abstract class BaseLauncher {
 							{
 								syncPort: port,
 								file: program!,
-								uri: debugPorts!.uri,
+								uri: debugPorts?.uri,
 								terminator: terminator!,
 							},
 							[port],
@@ -268,7 +268,7 @@ export abstract class BaseLauncher {
 
 	public terminate(): Promise<void> {
 		if (this.terminal !== undefined) {
-			this.terminal.sendText(`Execution terminated`, true);
+			this.terminal.sendText("Execution terminated", true);
 		}
 		return this.terminateConnection();
 	}

@@ -17,10 +17,6 @@ import { MessageNotifications, MessageRequests } from "../common/messages";
 export class WebLauncher extends BaseLauncher {
 	private worker: Worker | undefined;
 
-	public constructor() {
-		super();
-	}
-
 	protected async createMessageConnection(
 		context: ExtensionContext,
 	): Promise<MessageConnection> {
@@ -32,14 +28,14 @@ export class WebLauncher extends BaseLauncher {
 		const channel = new MessageChannel();
 		const ready = new Promise<void>((resolve, reject) => {
 			if (this.worker === undefined) {
-				reject(new Error(`Worker died unexpectedly.`));
+				reject(new Error("Worker died unexpectedly."));
 				return;
 			}
 			this.worker.onmessage = (event: MessageEvent<string>) => {
 				if (event.data === "ready") {
 					resolve();
 				} else {
-					reject(new Error(`Missing ready event from worker`));
+					reject(new Error("Missing ready event from worker"));
 				}
 				if (this.worker !== undefined) {
 					this.worker.onmessage = null;

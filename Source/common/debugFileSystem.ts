@@ -24,34 +24,13 @@ import {
 	fdflags,
 	fdstat,
 	filestat,
-	filetype,
 	lookupflags,
 	oflags,
 	rights,
 	size,
 } from "@vscode/wasm-wasi";
 
-class DebugFileDescriptor extends BaseFileDescriptor {
-	constructor(
-		deviceId: bigint,
-		fd: fd,
-		filetype: filetype,
-		rights_base: rights,
-		rights_inheriting: rights,
-		fdflags: fdflags,
-		inode: bigint,
-	) {
-		super(
-			deviceId,
-			fd,
-			filetype,
-			rights_base,
-			rights_inheriting,
-			fdflags,
-			inode,
-		);
-	}
-}
+class DebugFileDescriptor extends BaseFileDescriptor {}
 
 class DebugCharacterDeviceFD extends DebugFileDescriptor {
 	constructor(
@@ -314,18 +293,21 @@ export function create(
 
 			const offset = BigInts.asNumber(_offset);
 			switch (whence) {
-				case Whence.set:
+				case Whence.set: {
 					fileDescriptor.cursor = offset;
 					break;
-				case Whence.cur:
-					fileDescriptor.cursor = fileDescriptor.cursor + offset;
+				}
+				case Whence.cur: {
+					fileDescriptor.cursor += offset;
 					break;
-				case Whence.end:
+				}
+				case Whence.end: {
 					fileDescriptor.cursor = Math.max(
 						0,
 						mainContentBytes.byteLength - offset,
 					);
 					break;
+				}
 			}
 			return BigInt(fileDescriptor.cursor);
 		},
@@ -364,7 +346,7 @@ export function create(
 				}
 			}
 			if (fileFD !== undefined) {
-				fileFD.cursor = fileFD.cursor + totalBytesRead;
+				fileFD.cursor += totalBytesRead;
 			}
 			return totalBytesRead;
 		},

@@ -21,4 +21,4 @@ interface Console {
 	warn(...data: any[]): void;
 }
 
-declare var console: Console;
+declare let console: Console;

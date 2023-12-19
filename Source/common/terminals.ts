@@ -34,8 +34,8 @@ export namespace Terminals {
 	}
 
 	export function getReplTerminal(show: boolean): ServicePseudoTerminal {
-		const terminalName = `Python REPL`;
-		const header = `Running Python REPL`;
+		const terminalName = "Python REPL";
+		const header = "Running Python REPL";
 		return getTerminal(terminalName, header, show, false);
 	}
 
@@ -96,8 +96,8 @@ export namespace Terminals {
 		terminated = false,
 	): void {
 		const footer = terminated
-			? `Python execution got terminated. The terminal will be reused, press any key to close it.`
-			: `Terminal will be reused, press any key to close it.`;
+			? "Python execution got terminated. The terminal will be reused, press any key to close it."
+			: "Terminal will be reused, press any key to close it.";
 		releaseTerminal(pty, footer);
 	}
 
@@ -106,8 +106,8 @@ export namespace Terminals {
 		terminated = false,
 	): void {
 		const footer = terminated
-			? `Repl execution got terminated. The terminal will be reused, press any key to close it.`
-			: `Terminal will be reused, press any key to close it.`;
+			? "Repl execution got terminated. The terminal will be reused, press any key to close it."
+			: "Terminal will be reused, press any key to close it.";
 		releaseTerminal(pty, footer);
 	}
 
@@ -137,7 +137,7 @@ export namespace Terminals {
 
 	function findTerminal(id: string): Terminal | undefined {
 		const info = idleTerminals.get(id) ?? terminalsInUse.get(id);
-		return info && info[0];
+		return info?.[0];
 	}
 
 	function formatMessageForTerminal(

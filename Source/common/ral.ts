@@ -20,7 +20,7 @@ let _ral: RAL | undefined;
 
 function RAL(): RAL {
 	if (_ral === undefined) {
-		throw new Error(`No runtime abstraction layer installed`);
+		throw new Error("No runtime abstraction layer installed");
 	}
 	return _ral;
 }
@@ -28,7 +28,7 @@ function RAL(): RAL {
 namespace RAL {
 	export function install(ral: RAL): void {
 		if (ral === undefined) {
-			throw new Error(`No runtime abstraction layer provided`);
+			throw new Error("No runtime abstraction layer provided");
 		}
 		_ral = ral;
 	}

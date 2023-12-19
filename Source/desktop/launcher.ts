@@ -20,10 +20,6 @@ import { MessageNotifications, MessageRequests } from "../common/messages";
 export class DesktopLauncher extends BaseLauncher {
 	private worker: Worker | undefined;
 
-	public constructor() {
-		super();
-	}
-
 	protected async createMessageConnection(
 		context: ExtensionContext,
 	): Promise<MessageConnection> {
@@ -35,14 +31,14 @@ export class DesktopLauncher extends BaseLauncher {
 		const channel = new MessageChannel();
 		const ready = new Promise<void>((resolve, reject) => {
 			if (this.worker === undefined) {
-				reject(new Error(`Worker died unexpectedly.`));
+				reject(new Error("Worker died unexpectedly."));
 				return;
 			}
 			this.worker.once("message", (value: string) => {
 				if (value === "ready") {
 					resolve();
 				} else {
-					reject(new Error(`Missing ready event from worker`));
+					reject(new Error("Missing ready event from worker"));
 				}
 			});
 		});

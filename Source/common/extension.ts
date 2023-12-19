@@ -29,7 +29,7 @@ function isCossOriginIsolated(): boolean {
 		return true;
 	}
 	void window.showWarningMessage(
-		`Executing Python needs cross origin isolation. You need to \nadd ?vscode-coi= to your browser URL to enable it.`,
+		"Executing Python needs cross origin isolation. You need to \nadd ?vscode-coi= to your browser URL to enable it.",
 		{ modal: true },
 	);
 	return false;
@@ -63,7 +63,7 @@ export class DebugConfigurationProvider implements DebugConfigurationProvider {
 			return undefined;
 		}
 		await this.preloadPromise;
-		if (!config.type && !config.request && !config.name) {
+		if (!(config.type || config.request || config.name)) {
 			const editor = window.activeTextEditor;
 			if (editor && editor.document.languageId === "python") {
 				config.type = "python-web-wasm";
