@@ -163,7 +163,7 @@
 		"serve": "14.2.1",
 		"shelljs": "0.8.5",
 		"typescript": "5.4.2",
-		"typescript-esbuild": "latest"
+		"typescript-esbuild": "0.4.5"
 	},
 	"extensionDependencies": [
 		"ms-vscode.remote-repositories"
