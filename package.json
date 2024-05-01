@@ -147,20 +147,20 @@
 		"onDebug"
 	],
 	"dependencies": {
-		"@types/path-browserify": "^1.0.0",
-		"path-browserify": "^1.0.1",
-		"uuid": "^9.0.0"
+		"@types/path-browserify": "1.0.2",
+		"path-browserify": "1.0.1",
+		"uuid": "9.0.1"
 	},
 	"devDependencies": {
 		"@playform/build": "0.0.7",
 		"@playform/document": "0.0.6",
-		"@types/node": "^16.11.57",
-		"@types/uuid": "^9.0.0",
-		"esbuild": "^0.17.7",
-		"localtunnel": "^2.0.2",
-		"rimraf": "^4.1.2",
-		"serve": "^14.2.0",
-		"shelljs": "^0.8.5"
+		"@types/node": "20.12.7",
+		"@types/uuid": "9.0.8",
+		"esbuild": "0.20.2",
+		"localtunnel": "2.0.2",
+		"rimraf": "5.0.5",
+		"serve": "14.2.3",
+		"shelljs": "0.8.5"
 	},
 	"extensionDependencies": [
 		"ms-vscode.remote-repositories"
