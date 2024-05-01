@@ -1,42 +1,17 @@
 {
-	"name": "vscode-python-web-wasm",
-	"displayName": "Experimental - Python for the Web",
-	"version": "0.0.1",
-	"private": false,
-	"description": "Experimental support for Python in the Web using WebAssemblies",
-	"keywords": [
-		"land"
+	"activationEvents": [
+		"onLanguage:python",
+		"onDebugResolve:python-web-wasm",
+		"onDebug"
 	],
-	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/LandPythonWebWASM#readme",
-	"bugs": {
-		"url": "HTTPS://GitHub.Com/CodeEditorLand/LandPythonWebWASM/issues"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+HTTPS://github.com/CodeEditorLand/LandPythonWebWASM.git"
-	},
-	"license": "SEE LICENSE IN LICENSE",
 	"author": {
-		"name": "🌆 — Land —",
 		"email": "Land@PlayForm.Cloud",
+		"name": "🌆 — Land —",
 		"url": "HTTPS://Land.PlayForm.Cloud"
 	},
-	"type": "module",
-	"main": "./dist/desktop/extension.js",
 	"browser": "./dist/web/extension.js",
-	"scripts": {
-		"Document": "Document 'Source/**/*.ts'",
-		"all": "npm run clean && npm run compile:tsc && npm run esbuild && npm run lint",
-		"clean": "rimraf out && rimraf dist",
-		"compile:tsc": "tsc -b ./tsconfig.json",
-		"esbuild": "node ./bin/esbuild.mjs",
-		"prepublishOnly": "Build 'Source/**/*.ts'",
-		"serve": "serve --cors -l 5000 --ssl-cert $HOME/certs/localhost.pem --ssl-key $HOME/certs/localhost-key.pem -c ./configs/serve.json",
-		"serve-tunnel": "serve --cors -l 5000 -c ./configs/serve.json",
-		"symlink:vscode-wasm": "node ./bin/symlink",
-		"tunnel": "lt -p 5000",
-		"watch:esbuild": "node ./bin/esbuild.mjs --watch",
-		"watch:tsc": "tsc -b ./tsconfig.json -w"
+	"bugs": {
+		"url": "HTTPS://GitHub.Com/CodeEditorLand/LandPythonWebWASM/issues"
 	},
 	"contributes": {
 		"breakpoints": [
@@ -141,16 +116,12 @@
 			]
 		}
 	},
-	"activationEvents": [
-		"onLanguage:python",
-		"onDebugResolve:python-web-wasm",
-		"onDebug"
-	],
 	"dependencies": {
 		"@types/path-browserify": "1.0.2",
 		"path-browserify": "1.0.1",
 		"uuid": "9.0.1"
 	},
+	"description": "Experimental support for Python in the Web using WebAssemblies",
 	"devDependencies": {
 		"@playform/build": "0.0.7",
 		"@playform/document": "0.0.6",
@@ -162,11 +133,40 @@
 		"serve": "14.2.3",
 		"shelljs": "0.8.5"
 	},
+	"displayName": "Experimental - Python for the Web",
 	"extensionDependencies": [
 		"ms-vscode.remote-repositories"
 	],
+	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/LandPythonWebWASM#readme",
+	"keywords": [
+		"land"
+	],
+	"license": "SEE LICENSE IN LICENSE",
+	"main": "./dist/desktop/extension.js",
+	"name": "vscode-python-web-wasm",
+	"preview": true,
+	"private": false,
 	"publishConfig": {
 		"access": "public"
 	},
-	"preview": true
+	"repository": {
+		"type": "git",
+		"url": "git+HTTPS://github.com/CodeEditorLand/LandPythonWebWASM.git"
+	},
+	"scripts": {
+		"Document": "Document 'Source/**/*.ts'",
+		"all": "npm run clean && npm run compile:tsc && npm run esbuild && npm run lint",
+		"clean": "rimraf out && rimraf dist",
+		"compile:tsc": "tsc -b ./tsconfig.json",
+		"esbuild": "node ./bin/esbuild.mjs",
+		"prepublishOnly": "Build 'Source/**/*.ts'",
+		"serve": "serve --cors -l 5000 --ssl-cert $HOME/certs/localhost.pem --ssl-key $HOME/certs/localhost-key.pem -c ./configs/serve.json",
+		"serve-tunnel": "serve --cors -l 5000 -c ./configs/serve.json",
+		"symlink:vscode-wasm": "node ./bin/symlink",
+		"tunnel": "lt -p 5000",
+		"watch:esbuild": "node ./bin/esbuild.mjs --watch",
+		"watch:tsc": "tsc -b ./tsconfig.json -w"
+	},
+	"type": "module",
+	"version": "0.0.1"
 }
