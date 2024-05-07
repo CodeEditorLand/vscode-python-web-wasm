@@ -780,6 +780,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 			}
 			this._workspaceUri2WasmPath.set(`${uri.toString()}/`, key);
 		}
+
 		this._pathMappingsCompleteResolver!();
 	}
 
