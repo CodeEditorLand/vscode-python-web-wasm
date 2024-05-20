@@ -11,7 +11,7 @@ const watch = process.argv.includes('--watch');
  * @typedef {import('esbuild').BuildOptions} BuildOptions
  */
 
-
+/** @type BuildOptions */
 const sharedBrowserOptions = {
 	bundle: true,
 	external: ['vscode'],
@@ -20,7 +20,7 @@ const sharedBrowserOptions = {
 	sourcemap: true,
 };
 
-
+/** @type BuildOptions */
 const webOptions = {
 	entryPoints: ['src/web/extension.ts'],
 	outfile: 'dist/web/extension.js',
@@ -28,7 +28,7 @@ const webOptions = {
 	...sharedBrowserOptions,
 };
 
-
+/** @type BuildOptions */
 const webWorkerOptions = {
 	entryPoints: ['src/web/pythonWasmWorker.ts'],
 	outfile: 'dist/web/pythonWasmWorker.js',
@@ -36,7 +36,7 @@ const webWorkerOptions = {
 	...sharedBrowserOptions,
 };
 
-
+/** @type BuildOptions */
 const sharedDesktopOptions = {
 	bundle: true,
 	external: ['vscode'],
@@ -45,7 +45,7 @@ const sharedDesktopOptions = {
 	sourcemap: true,
 };
 
-
+/** @type BuildOptions */
 const desktopOptions = {
 	entryPoints: ['src/desktop/extension.ts'],
 	outfile: 'dist/desktop/extension.js',
@@ -53,7 +53,7 @@ const desktopOptions = {
 	...sharedDesktopOptions,
 };
 
-
+/** @type BuildOptions */
 const desktopWorkerOptions = {
 	entryPoints: ['src/desktop/pythonWasmWorker.ts'],
 	outfile: 'dist/desktop/pythonWasmWorker.js',
