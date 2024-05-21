@@ -125,17 +125,17 @@
 		"onDebug"
 	],
 	"dependencies": {
-		"@types/path-browserify": "1.0.0",
+		"@types/path-browserify": "1.0.2",
 		"path-browserify": "1.0.1",
-		"uuid": "9.0.0"
+		"uuid": "9.0.1"
 	},
 	"devDependencies": {
-		"@types/node": "16.11.57",
-		"@types/uuid": "9.0.0",
-		"esbuild": "0.17.7",
+		"@types/node": "20.12.12",
+		"@types/uuid": "9.0.8",
+		"esbuild": "0.21.3",
 		"localtunnel": "2.0.2",
-		"rimraf": "4.1.2",
-		"serve": "14.2.0",
+		"rimraf": "5.0.7",
+		"serve": "14.2.3",
 		"shelljs": "0.8.5"
 	},
 	"extensionDependencies": [
