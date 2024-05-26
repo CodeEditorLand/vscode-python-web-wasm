@@ -4,33 +4,33 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
 trigger:
-  batch: true
-  branches:
-    include: [ '*' ]
-  tags:
-    include: [ 'release/*/*' ]
+    batch: true
+    branches:
+        include: ["*"]
+    tags:
+        include: ["release/*/*"]
 pr:
-  branches:
-    include: [ 'main', 'release/*' ]
+    branches:
+        include: ["main", "release/*"]
 
 variables:
-  Codeql.Enabled: true
+    Codeql.Enabled: true
 
 jobs:
-- job: Windows
-  pool:
-    vmImage: 'windows-latest'
-  steps:
-  - template: build/azure-pipelines/win32/build.yml
+    - job: Windows
+      pool:
+          vmImage: "windows-latest"
+      steps:
+          - template: build/azure-pipelines/win32/build.yml
 
-- job: Linux
-  pool:
-    vmImage: 'ubuntu-latest'
-  steps:
-  - template: build/azure-pipelines/linux/build.yml
+    - job: Linux
+      pool:
+          vmImage: "ubuntu-latest"
+      steps:
+          - template: build/azure-pipelines/linux/build.yml
 
-- job: macOS
-  pool:
-    vmImage: 'macOS-latest'
-  steps:
-  - template: build/azure-pipelines/darwin/build.yml
+    - job: macOS
+      pool:
+          vmImage: "macOS-latest"
+      steps:
+          - template: build/azure-pipelines/darwin/build.yml
