@@ -1,0 +1,57 @@
+{
+	// See https://go.microsoft.com/fwlink/?LinkId=733558
+	// for the documentation about the tasks.json format
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "watch:tsc",
+			"isBackground": true,
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"presentation": {
+				"reveal": "never",
+				"panel": "dedicated"
+			},
+			"problemMatcher": [
+				"$tsc-watch"
+			],
+		},
+		{
+			"type": "npm",
+			"script": "watch:esbuild",
+			"isBackground": true,
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"presentation": {
+				"reveal": "never",
+				"panel": "dedicated"
+			}
+		},
+		{
+			"type": "npm",
+			"script": "compile:tsc",
+			"isBackground": false,
+			"group": "build",
+			"presentation": {
+				"reveal": "never",
+				"panel": "dedicated"
+			},
+			"problemMatcher": [
+				"$tsc"
+			]
+		},
+		{
+			"type": "npm",
+			"script": "serve",
+			"problemMatcher": [],
+			"isBackground": true,
+			"label": "npm: serve",
+			"detail": "serve --cors -l 5000 --ssl-cert $HOME/certs/localhost.pem --ssl-key $HOME/certs/localhost-key.pem -c ./configs/serve.json"
+		}
+	]
+}
