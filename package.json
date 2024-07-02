@@ -132,7 +132,7 @@
 	"devDependencies": {
 		"@types/node": "20.14.9",
 		"@types/uuid": "10.0.0",
-		"esbuild": "0.22.0",
+		"esbuild": "0.23.0",
 		"localtunnel": "2.0.2",
 		"rimraf": "5.0.7",
 		"serve": "14.2.3",
