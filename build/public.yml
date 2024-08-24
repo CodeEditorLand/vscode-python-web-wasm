@@ -1,32 +1,32 @@
 trigger: none
 
 pr:
-  - main
-  - release/*
+    - main
+    - release/*
 
 jobs:
-  - job: Windows
-    pool:
-      vmImage: "windows-latest"
-    steps:
-      - template: templates/compile.yml
-        parameters:
-          buildSteps:
-            - template: templates/compile.yml
+    - job: Windows
+      pool:
+          vmImage: "windows-latest"
+      steps:
+          - template: templates/compile.yml
+            parameters:
+                buildSteps:
+                    - template: templates/compile.yml
 
-      - task: RichCodeNavIndexer@0
-        displayName: VS Rich Code Navigation Upload
-        inputs:
-          languages: typescript,
-          typescriptVersion: 0.6.0-next.21
-          configFiles: .lsifrc.json
-        continueOnError: true
+          - task: RichCodeNavIndexer@0
+            displayName: VS Rich Code Navigation Upload
+            inputs:
+                languages: typescript,
+                typescriptVersion: 0.6.0-next.21
+                configFiles: .lsifrc.json
+            continueOnError: true
 
-  - job: Linux
-    pool:
-      vmImage: "ubuntu-latest"
-    steps:
-      - template: templates/compile.yml
-        parameters:
-          buildSteps:
-            - template: templates/compile.yml
+    - job: Linux
+      pool:
+          vmImage: "ubuntu-latest"
+      steps:
+          - template: templates/compile.yml
+            parameters:
+                buildSteps:
+                    - template: templates/compile.yml
