@@ -1,9 +1,0 @@
-{
-	"root": true,
-	"extends": "./.eslintrc.base.json",
-	"parserOptions": {
-		"project": ["./src/common/tsconfig.json", "./src/desktop/tsconfig.json", "./src/web/tsconfig.json"]
-	},
-	"rules": {
-	}
-}
