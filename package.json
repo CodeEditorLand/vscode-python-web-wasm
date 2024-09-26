@@ -1,21 +1,10 @@
 {
-	"name": "vscode-python-web-wasm",
-	"displayName": "Experimental - Python for the Web",
-	"description": "Experimental support for Python in the Web using WebAssemblies",
-	"main": "./dist/desktop/extension.js",
+	"activationEvents": [
+		"onLanguage:python",
+		"onDebugResolve:python-web-wasm",
+		"onDebug"
+	],
 	"browser": "./dist/web/extension.js",
-	"scripts": {
-		"all": "npm run clean && npm run compile:tsc && npm run esbuild && npm run lint",
-		"clean": "rimraf out && rimraf dist",
-		"compile:tsc": "tsc -b ./tsconfig.json",
-		"esbuild": "node ./bin/esbuild.mjs",
-		"serve": "serve --cors -l 5000 --ssl-cert $HOME/certs/localhost.pem --ssl-key $HOME/certs/localhost-key.pem -c ./configs/serve.json",
-		"serve-tunnel": "serve --cors -l 5000 -c ./configs/serve.json",
-		"symlink:vscode-wasm": "node ./bin/symlink",
-		"tunnel": "lt -p 5000",
-		"watch:esbuild": "node ./bin/esbuild.mjs --watch",
-		"watch:tsc": "tsc -b ./tsconfig.json -w"
-	},
 	"contributes": {
 		"breakpoints": [
 			{
@@ -119,16 +108,12 @@
 			]
 		}
 	},
-	"activationEvents": [
-		"onLanguage:python",
-		"onDebugResolve:python-web-wasm",
-		"onDebug"
-	],
 	"dependencies": {
 		"@types/path-browserify": "1.0.3",
 		"path-browserify": "1.0.1",
 		"uuid": "10.0.0"
 	},
+	"description": "Experimental support for Python in the Web using WebAssemblies",
 	"devDependencies": {
 		"@types/node": "22.6.0",
 		"@types/uuid": "10.0.0",
@@ -138,8 +123,23 @@
 		"serve": "14.2.3",
 		"shelljs": "0.8.5"
 	},
+	"displayName": "Experimental - Python for the Web",
 	"extensionDependencies": [
 		"ms-vscode.remote-repositories"
 	],
-	"preview": true
+	"main": "./dist/desktop/extension.js",
+	"name": "vscode-python-web-wasm",
+	"preview": true,
+	"scripts": {
+		"all": "npm run clean && npm run compile:tsc && npm run esbuild && npm run lint",
+		"clean": "rimraf out && rimraf dist",
+		"compile:tsc": "tsc -b ./tsconfig.json",
+		"esbuild": "node ./bin/esbuild.mjs",
+		"serve": "serve --cors -l 5000 --ssl-cert $HOME/certs/localhost.pem --ssl-key $HOME/certs/localhost-key.pem -c ./configs/serve.json",
+		"serve-tunnel": "serve --cors -l 5000 -c ./configs/serve.json",
+		"symlink:vscode-wasm": "node ./bin/symlink",
+		"tunnel": "lt -p 5000",
+		"watch:esbuild": "node ./bin/esbuild.mjs --watch",
+		"watch:tsc": "tsc -b ./tsconfig.json -w"
+	}
 }
