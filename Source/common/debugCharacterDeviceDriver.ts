@@ -1,16 +1,17 @@
-
 /* --------------------------------------------------------------------------------------------
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License. See License.txt in the project root for license information.
  * ------------------------------------------------------------------------------------------ */
 
-import * as uuid from 'uuid';
-
-import { Uri, Event, EventEmitter } from 'vscode';
-import { CharacterDeviceDriver, FileDescriptorDescription, RAL as SyncRal } from '@vscode/sync-api-service';
+import {
+	CharacterDeviceDriver,
+	FileDescriptorDescription,
+	RAL as SyncRal,
+} from "@vscode/sync-api-service";
+import * as uuid from "uuid";
+import { Event, EventEmitter, Uri } from "vscode";
 
 export class DebugCharacterDeviceDriver implements CharacterDeviceDriver {
-
 	public readonly uri: Uri;
 	public readonly fileDescriptor: FileDescriptorDescription;
 	public get output(): Event<string> {
@@ -27,11 +28,11 @@ export class DebugCharacterDeviceDriver implements CharacterDeviceDriver {
 	private _inputEmitter = new EventEmitter<void>();
 	private _inputQueue: string[] = [];
 	constructor() {
-		this.uri = Uri.from({ scheme: 'debug', authority: uuid.v4()});
+		this.uri = Uri.from({ scheme: "debug", authority: uuid.v4() });
 		this.fileDescriptor = {
-			kind: 'fileSystem',
+			kind: "fileSystem",
 			uri: this.uri,
-			path: ''
+			path: "",
 		};
 	}
 
@@ -47,12 +48,16 @@ export class DebugCharacterDeviceDriver implements CharacterDeviceDriver {
 	read(_maxBytesToRead: number): Promise<Uint8Array> {
 		// TODO: Handle inputs longer than maxBytesToRead
 		if (this._inputQueue.length > 0) {
-			return Promise.resolve(this._encoder.encode(this._inputQueue.shift()!));
+			return Promise.resolve(
+				this._encoder.encode(this._inputQueue.shift()!),
+			);
 		}
 		// No input available, wait for it
 		return new Promise<Uint8Array>((resolve, reject) => {
 			const disposable = this._inputEmitter.event(() => {
-				const bytes = this._encoder.encode(this._inputQueue.shift()! || '');
+				const bytes = this._encoder.encode(
+					this._inputQueue.shift()! || "",
+				);
 				disposable.dispose();
 				resolve(bytes);
 			});

@@ -3,25 +3,29 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  * ------------------------------------------------------------------------------------------ */
 
-import { Disposable, Terminal, Uri, window } from 'vscode';
+import { ServicePseudoTerminal, TerminalMode } from "@vscode/sync-api-service";
+import { Disposable, Terminal, Uri, window } from "vscode";
 
-import { ServicePseudoTerminal, TerminalMode } from '@vscode/sync-api-service';
-import RAL from './ral';
+import RAL from "./ral";
 
 export namespace Terminals {
-
 	type TerminalIdleInfo = [Terminal, ServicePseudoTerminal, Disposable];
 	type TerminalInUseInfo = [Terminal, ServicePseudoTerminal];
 
 	const idleTerminals: Map<string, TerminalIdleInfo> = new Map();
 	const terminalsInUse: Map<string, TerminalInUseInfo> = new Map();
 
-	export function getTerminalInUse(uuid: string): ServicePseudoTerminal | undefined {
+	export function getTerminalInUse(
+		uuid: string,
+	): ServicePseudoTerminal | undefined {
 		const inUse = terminalsInUse.get(uuid);
 		return inUse?.[1];
 	}
 
-	export function getExecutionTerminal(resource: Uri, show: boolean): ServicePseudoTerminal {
+	export function getExecutionTerminal(
+		resource: Uri,
+		show: boolean,
+	): ServicePseudoTerminal {
 		const fileName = RAL().path.basename(resource.toString(true));
 		const terminalName = `Executing ${fileName}`;
 		const header = `Executing Python file ${fileName}`;
@@ -35,7 +39,12 @@ export namespace Terminals {
 		return getTerminal(terminalName, header, show, false);
 	}
 
-	function getTerminal(terminalName: string, header: string | undefined, show: boolean, preserveFocus: boolean) {
+	function getTerminal(
+		terminalName: string,
+		header: string | undefined,
+		show: boolean,
+		preserveFocus: boolean,
+	) {
 		// Check if we have an idle terminal
 		if (idleTerminals.size > 0) {
 			const entry = idleTerminals.entries().next();
@@ -51,7 +60,9 @@ export namespace Terminals {
 					terminal.show(preserveFocus);
 				}
 				if (header !== undefined) {
-					pty.writeString(formatMessageForTerminal(header, true, true));
+					pty.writeString(
+						formatMessageForTerminal(header, true, true),
+					);
 				}
 				terminalsInUse.set(pty.id, [terminal, pty]);
 				return pty;
@@ -63,9 +74,12 @@ export namespace Terminals {
 		pty.setMode(TerminalMode.inUse);
 		pty.onDidClose(() => {
 			clearTerminal(pty);
-
 		});
-		const terminal = window.createTerminal({ name: terminalName, pty, isTransient: true });
+		const terminal = window.createTerminal({
+			name: terminalName,
+			pty,
+			isTransient: true,
+		});
 		if (show) {
 			terminal.show(preserveFocus);
 		}
@@ -77,14 +91,20 @@ export namespace Terminals {
 		return pty;
 	}
 
-	export function releaseExecutionTerminal(pty: ServicePseudoTerminal, terminated: boolean = false): void {
+	export function releaseExecutionTerminal(
+		pty: ServicePseudoTerminal,
+		terminated: boolean = false,
+	): void {
 		const footer = terminated
 			? `Python execution got terminated. The terminal will be reused, press any key to close it.`
 			: `Terminal will be reused, press any key to close it.`;
 		releaseTerminal(pty, footer);
 	}
 
-	export function releaseReplTerminal(pty: ServicePseudoTerminal, terminated: boolean = false): void {
+	export function releaseReplTerminal(
+		pty: ServicePseudoTerminal,
+		terminated: boolean = false,
+	): void {
 		const footer = terminated
 			? `Repl execution got terminated. The terminal will be reused, press any key to close it.`
 			: `Terminal will be reused, press any key to close it.`;
@@ -120,7 +140,11 @@ export namespace Terminals {
 		return info && info[0];
 	}
 
-	function formatMessageForTerminal(message: string, leadingNewLine: boolean, trailingNewLine: boolean): string {
-		return `${leadingNewLine ? '\r\n\r\n' : ''}\x1b[0m\x1b[7m * \x1b[0m ${message} \x1b[0m${trailingNewLine ? '\r\n\r\n' : ''}`;
+	function formatMessageForTerminal(
+		message: string,
+		leadingNewLine: boolean,
+		trailingNewLine: boolean,
+	): string {
+		return `${leadingNewLine ? "\r\n\r\n" : ""}\x1b[0m\x1b[7m * \x1b[0m ${message} \x1b[0m${trailingNewLine ? "\r\n\r\n" : ""}`;
 	}
 }

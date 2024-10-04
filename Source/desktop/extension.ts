@@ -2,10 +2,13 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License. See License.txt in the project root for license information.
  * ------------------------------------------------------------------------------------------ */
-import RIL from './ril';
-RIL.install();
+import {
+	activate as _activate,
+	deactivate as _deactivate,
+} from "../common/extension";
+import RIL from "./ril";
 
-import { activate as _activate, deactivate as _deactivate } from '../common/extension';
+RIL.install();
 
 export const activate = _activate;
 export const deactivate = _deactivate;
