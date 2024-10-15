@@ -120,7 +120,7 @@
 		"esbuild": "0.24.0",
 		"localtunnel": "2.0.2",
 		"rimraf": "6.0.1",
-		"serve": "14.2.3",
+		"serve": "14.2.4",
 		"shelljs": "0.8.5"
 	},
 	"displayName": "Experimental - Python for the Web",
