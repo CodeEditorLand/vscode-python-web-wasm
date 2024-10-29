@@ -111,11 +111,11 @@
 	"dependencies": {
 		"@types/path-browserify": "1.0.3",
 		"path-browserify": "1.0.1",
-		"uuid": "11.0.1"
+		"uuid": "11.0.2"
 	},
 	"description": "Experimental support for Python in the Web using WebAssemblies",
 	"devDependencies": {
-		"@types/node": "22.8.1",
+		"@types/node": "22.8.2",
 		"@types/uuid": "10.0.0",
 		"esbuild": "0.24.0",
 		"localtunnel": "2.0.2",
