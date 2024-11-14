@@ -111,7 +111,7 @@
 	"dependencies": {
 		"@types/path-browserify": "1.0.3",
 		"path-browserify": "1.0.1",
-		"uuid": "11.0.2"
+		"uuid": "11.0.3"
 	},
 	"description": "Experimental support for Python in the Web using WebAssemblies",
 	"devDependencies": {
