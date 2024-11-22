@@ -186,6 +186,7 @@ export abstract class BaseLauncher {
 		terminator?: string,
 	): Promise<void> {
 		this.state = { mode, stdio, program };
+
 		const [{ repository, root }, sharedWasmBytes, messageConnection] =
 			await Promise.all([
 				PythonInstallation.getConfig(),
@@ -206,6 +207,7 @@ export abstract class BaseLauncher {
 
 		const [syncConnection, port] =
 			await this.createSyncConnection(messageConnection);
+
 		const apiService = new ApiService(
 			"Python WASM Execution",
 			syncConnection,
@@ -216,6 +218,7 @@ export abstract class BaseLauncher {
 		);
 
 		apiService.registerCharacterDeviceDriver(stdio, true);
+
 		if (mode === "debug") {
 			apiService.registerCharacterDeviceDriver(debugPorts!, false);
 		}

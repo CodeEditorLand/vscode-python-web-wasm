@@ -32,6 +32,7 @@ function isCossOriginIsolated(): boolean {
 		`Executing Python needs cross origin isolation. You need to \nadd ?vscode-coi= to your browser URL to enable it.`,
 		{ modal: true },
 	);
+
 	return false;
 }
 
@@ -63,8 +64,10 @@ export class DebugConfigurationProvider implements DebugConfigurationProvider {
 			return undefined;
 		}
 		await this.preloadPromise;
+
 		if (!config.type && !config.request && !config.name) {
 			const editor = window.activeTextEditor;
+
 			if (editor && editor.document.languageId === "python") {
 				config.type = "python-web-wasm";
 				config.name = "Launch";
@@ -85,6 +88,7 @@ export class DebugConfigurationProvider implements DebugConfigurationProvider {
 			await window.showInformationMessage(
 				"Cannot find a Python file to debug",
 			);
+
 			return undefined;
 		}
 
@@ -93,6 +97,7 @@ export class DebugConfigurationProvider implements DebugConfigurationProvider {
 			config.program && config.program !== "${file}"
 				? getResourceUri(config.program)
 				: window.activeTextEditor?.document.uri;
+
 		if (targetResource) {
 			config.program = targetResource.toString();
 		}
@@ -121,6 +126,7 @@ export class DebugAdapterDescriptorFactory
 		session: DebugSession,
 	): Promise<DebugAdapterDescriptor> {
 		await this.preloadPromise;
+
 		return new DebugAdapterInlineImplementation(
 			new DebugAdapter(session, this.context, RAL()),
 		);
@@ -137,16 +143,20 @@ export function activate(context: ExtensionContext) {
 					return false;
 				}
 				let targetResource = resource;
+
 				if (!targetResource && window.activeTextEditor) {
 					targetResource = window.activeTextEditor.document.uri;
 				}
 				if (targetResource) {
 					await preloadPromise;
+
 					const pty = Terminals.getExecutionTerminal(
 						targetResource,
 						true,
 					);
+
 					const launcher = RAL().launcher.create();
+
 					const ctrlC = pty.onDidCtrlC(() => {
 						ctrlC.dispose();
 						launcher.terminate().catch(console.error);
@@ -177,11 +187,13 @@ export function activate(context: ExtensionContext) {
 					return false;
 				}
 				let targetResource = resource;
+
 				if (!targetResource && window.activeTextEditor) {
 					targetResource = window.activeTextEditor.document.uri;
 				}
 				if (targetResource) {
 					await preloadPromise;
+
 					return debug.startDebugging(undefined, {
 						type: "python-web-wasm",
 						name: "Debug Python in WASM",
@@ -201,11 +213,13 @@ export function activate(context: ExtensionContext) {
 					return false;
 				}
 				const pty = Terminals.getReplTerminal(true);
+
 				const ctrlC = pty.onDidCtrlC(() => {
 					ctrlC.dispose();
 					launcher.terminate().catch(console.error);
 					Terminals.releaseReplTerminal(pty, true);
 				});
+
 				const launcher = RAL().launcher.create();
 				await launcher.startRepl(context, pty);
 				launcher
@@ -217,6 +231,7 @@ export function activate(context: ExtensionContext) {
 						ctrlC.dispose();
 						Terminals.releaseReplTerminal(pty);
 					});
+
 				return true;
 			},
 		),

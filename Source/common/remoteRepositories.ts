@@ -7,9 +7,11 @@ import { Extension, extensions, Uri } from "vscode";
 
 export interface RemoteHubApi {
 	getProviderUri(uri: Uri): Uri;
+
 	getProviderRootUri(uri: Uri): Uri;
 
 	getVirtualUri(uri: Uri): Uri;
+
 	getVirtualWorkspaceUri(uri: Uri): Uri | undefined;
 
 	loadWorkspaceContents?(workspaceUri: Uri): Promise<boolean>;

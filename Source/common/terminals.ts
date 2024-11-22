@@ -13,12 +13,14 @@ export namespace Terminals {
 	type TerminalInUseInfo = [Terminal, ServicePseudoTerminal];
 
 	const idleTerminals: Map<string, TerminalIdleInfo> = new Map();
+
 	const terminalsInUse: Map<string, TerminalInUseInfo> = new Map();
 
 	export function getTerminalInUse(
 		uuid: string,
 	): ServicePseudoTerminal | undefined {
 		const inUse = terminalsInUse.get(uuid);
+
 		return inUse?.[1];
 	}
 
@@ -27,7 +29,9 @@ export namespace Terminals {
 		show: boolean,
 	): ServicePseudoTerminal {
 		const fileName = RAL().path.basename(resource.toString(true));
+
 		const terminalName = `Executing ${fileName}`;
+
 		const header = `Executing Python file ${fileName}`;
 
 		return getTerminal(terminalName, header, show, true);
@@ -35,7 +39,9 @@ export namespace Terminals {
 
 	export function getReplTerminal(show: boolean): ServicePseudoTerminal {
 		const terminalName = `Python REPL`;
+
 		const header = `Running Python REPL`;
+
 		return getTerminal(terminalName, header, show, false);
 	}
 
@@ -48,14 +54,19 @@ export namespace Terminals {
 		// Check if we have an idle terminal
 		if (idleTerminals.size > 0) {
 			const entry = idleTerminals.entries().next();
+
 			if (entry.done === false) {
 				idleTerminals.delete(entry.value[0]);
+
 				const info = entry.value[1];
 				info[2].dispose();
+
 				const terminal = info[0];
+
 				const pty = info[1];
 				pty.setMode(TerminalMode.inUse);
 				pty.setName(terminalName);
+
 				if (show) {
 					terminal.show(preserveFocus);
 				}
@@ -65,21 +76,25 @@ export namespace Terminals {
 					);
 				}
 				terminalsInUse.set(pty.id, [terminal, pty]);
+
 				return pty;
 			}
 		}
 
 		// We haven't found an idle terminal. So create a new one;
+
 		const pty = ServicePseudoTerminal.create();
 		pty.setMode(TerminalMode.inUse);
 		pty.onDidClose(() => {
 			clearTerminal(pty);
 		});
+
 		const terminal = window.createTerminal({
 			name: terminalName,
 			pty,
 			isTransient: true,
 		});
+
 		if (show) {
 			terminal.show(preserveFocus);
 		}
@@ -88,6 +103,7 @@ export namespace Terminals {
 		}
 		const info: TerminalInUseInfo = [terminal, pty];
 		terminalsInUse.set(pty.id, info);
+
 		return pty;
 	}
 
@@ -113,6 +129,7 @@ export namespace Terminals {
 
 	function releaseTerminal(pty: ServicePseudoTerminal, footer: string): void {
 		const id = pty.id;
+
 		const info = terminalsInUse.get(id);
 		// Terminal might have gotten closed
 		if (info === undefined) {
@@ -120,6 +137,7 @@ export namespace Terminals {
 		}
 		pty.setMode(TerminalMode.idle);
 		pty.writeString(formatMessageForTerminal(footer, true, false));
+
 		const disposable = pty.onAnyKey(() => {
 			const terminal = findTerminal(pty.id);
 			clearTerminal(pty);
@@ -137,6 +155,7 @@ export namespace Terminals {
 
 	function findTerminal(id: string): Terminal | undefined {
 		const info = idleTerminals.get(id) ?? terminalsInUse.get(id);
+
 		return info && info[0];
 	}
 

@@ -24,6 +24,7 @@ export class Response extends Message implements DebugProtocol.Response {
 		super("response");
 		this.request_seq = request.seq;
 		this.command = request.command;
+
 		if (message) {
 			this.success = false;
 			(<any>this).message = message;
@@ -39,6 +40,7 @@ export class Event extends Message implements DebugProtocol.Event {
 	public constructor(event: string, body?: any) {
 		super("event");
 		this.event = event;
+
 		if (body) {
 			(<any>this).body = body;
 		}

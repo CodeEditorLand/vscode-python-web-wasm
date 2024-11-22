@@ -131,10 +131,13 @@ export function create(
 	mainContent: string,
 ): FileSystemDeviceDriver {
 	const mainContentBytes = textEncoder.encode(mainContent);
+
 	const deviceId = DeviceIds.next();
+
 	const preOpenDirectories: string[] = ["/$debug"];
 
 	let _root: DebugDirectoryFD | undefined;
+
 	function rootFd(fd?: fd): DebugDirectoryFD {
 		if (_root === undefined) {
 			if (fd === undefined) {
@@ -153,6 +156,7 @@ export function create(
 	}
 
 	let _main: DebugFileFD | undefined;
+
 	function mainFd(): DebugFileFD {
 		if (_main === undefined) {
 			_main = new DebugFileFD(
@@ -168,8 +172,10 @@ export function create(
 	}
 
 	let _input: DebugCharacterDeviceFD | undefined;
+
 	const InputRights =
 		Rights.fd_read | Rights.fd_filestat_get | Rights.poll_fd_readwrite;
+
 	function inputFd(): DebugCharacterDeviceFD {
 		if (_input === undefined) {
 			_input = new DebugCharacterDeviceFD(
@@ -185,8 +191,10 @@ export function create(
 	}
 
 	let _output: DebugCharacterDeviceFD | undefined;
+
 	const OutputRights =
 		Rights.fd_write | Rights.fd_filestat_get | Rights.poll_fd_readwrite;
+
 	function outputFd(): DebugCharacterDeviceFD {
 		if (_output === undefined) {
 			_output = new DebugCharacterDeviceFD(
@@ -205,12 +213,16 @@ export function create(
 		switch (path) {
 			case "/":
 				return rootFd();
+
 			case "/main.py":
 				return mainFd();
+
 			case "/input":
 				return inputFd();
+
 			case "/output":
 				return outputFd();
+
 			default:
 				throw new WasiError(Errno.noent);
 		}
@@ -254,6 +266,7 @@ export function create(
 		},
 		fd_prestat_get(fd: fd): [string, FileDescriptor] | undefined {
 			const next = preOpenDirectories.shift();
+
 			if (next === undefined) {
 				return undefined;
 			}
@@ -269,6 +282,7 @@ export function create(
 			fdflags: fdflags,
 		): FileDescriptor {
 			assertDirectory(parentDescriptor);
+
 			if (parentDescriptor !== rootFd()) {
 				throw new WasiError(Errno.notdir);
 			}
@@ -289,10 +303,12 @@ export function create(
 			result.ino = fileDescriptor.inode;
 			result.filetype = fileDescriptor.fileType;
 			result.nlink = 0n;
+
 			const now = BigInt(Date.now());
 			result.atim = now;
 			result.ctim = now;
 			result.mtim = now;
+
 			if (fileDescriptor instanceof DebugCharacterDeviceFD) {
 				result.size = 101n;
 			} else if (fileDescriptor instanceof DebugFileFD) {
@@ -313,18 +329,24 @@ export function create(
 			assertFile(fileDescriptor);
 
 			const offset = BigInts.asNumber(_offset);
+
 			switch (whence) {
 				case Whence.set:
 					fileDescriptor.cursor = offset;
+
 					break;
+
 				case Whence.cur:
 					fileDescriptor.cursor = fileDescriptor.cursor + offset;
+
 					break;
+
 				case Whence.end:
 					fileDescriptor.cursor = Math.max(
 						0,
 						mainContentBytes.byteLength - offset,
 					);
+
 					break;
 			}
 			return BigInt(fileDescriptor.cursor);
@@ -337,10 +359,14 @@ export function create(
 				(prev, current) => prev + current.length,
 				0,
 			);
+
 			let content: Uint8Array | undefined;
+
 			let offset: number | undefined;
+
 			let fileFD: DebugFileFD | undefined;
 			assertDebugFileDescriptor(fileDescriptor);
+
 			if (fileDescriptor === inputFd()) {
 				content = apiClient.byteSource.read(uri, maxBytesToRead);
 				offset = 0;
@@ -354,11 +380,13 @@ export function create(
 				throw new WasiError(Errno.badf);
 			}
 			let totalBytesRead = 0;
+
 			for (const buffer of buffers) {
 				const toCopy = Math.min(buffer.length, content.length - offset);
 				buffer.set(content.subarray(offset, toCopy));
 				offset += toCopy;
 				totalBytesRead += toCopy;
+
 				if (toCopy < buffer.length) {
 					break;
 				}
@@ -375,6 +403,7 @@ export function create(
 				throw new WasiError(Errno.badf);
 			}
 			let buffer: Uint8Array;
+
 			if (buffers.length === 1) {
 				buffer = buffers[0];
 			} else {
@@ -383,13 +412,16 @@ export function create(
 					0,
 				);
 				buffer = new Uint8Array(byteLength);
+
 				let offset = 0;
+
 				for (const item of buffers) {
 					buffer.set(item, offset);
 					offset = item.byteLength;
 				}
 			}
 			apiClient.byteSink.write(uri, buffer);
+
 			return buffer.byteLength;
 		},
 		fd_close(_fileDescriptor: FileDescriptor): void {},

@@ -27,6 +27,7 @@ export class DebugCharacterDeviceDriver implements CharacterDeviceDriver {
 	private _outputEmitter = new EventEmitter<string>();
 	private _inputEmitter = new EventEmitter<void>();
 	private _inputQueue: string[] = [];
+
 	constructor() {
 		this.uri = Uri.from({ scheme: "debug", authority: uuid.v4() });
 		this.fileDescriptor = {
@@ -43,6 +44,7 @@ export class DebugCharacterDeviceDriver implements CharacterDeviceDriver {
 		 */
 		const str = this._decoder.decode(bytes.slice());
 		this._outputEmitter.fire(str);
+
 		return Promise.resolve(bytes.byteLength);
 	}
 	read(_maxBytesToRead: number): Promise<Uint8Array> {

@@ -12,6 +12,7 @@ import { Tracer } from "./trace";
 namespace PythonInstallation {
 	const defaultPythonRepository =
 		"https://github.com/microsoft/vscode-python-web-wasm" as const;
+
 	const defaultPythonRoot = "python" as const;
 
 	async function resolveConfiguration(): Promise<{
@@ -19,11 +20,15 @@ namespace PythonInstallation {
 		root: string | undefined;
 	}> {
 		const path = RAL().path;
+
 		let pythonRepository = workspace
 			.getConfiguration("python.wasm")
 			.get<string | undefined | null>("runtime", undefined);
+
 		let isDefault: boolean = false;
+
 		let pythonRoot = undefined;
+
 		if (
 			pythonRepository === undefined ||
 			pythonRepository === null ||
@@ -35,6 +40,7 @@ namespace PythonInstallation {
 		}
 
 		let pythonRepositoryUri: Uri | undefined = undefined;
+
 		try {
 			pythonRepositoryUri = Uri.parse(pythonRepository);
 		} catch (error) {
@@ -52,7 +58,9 @@ namespace PythonInstallation {
 		// If we point to github.com we need to turn the URI into a virtual one
 		if (pythonRepositoryUri.authority === "github.com") {
 			const uriPath = pythonRepositoryUri.path;
+
 			const extname = path.extname(uriPath);
+
 			if (extname === ".git") {
 				pythonRepositoryUri = pythonRepositoryUri.with({
 					path: uriPath.substring(0, uriPath.length - extname.length),
@@ -77,6 +85,7 @@ namespace PythonInstallation {
 				Tracer.append(
 					`Failed to load Python from ${pythonRepositoryUri}`,
 				);
+
 				const api = await RemoteRepositories.getApi();
 				pythonRepositoryUri = api.getVirtualUri(
 					Uri.parse(defaultPythonRepository).with({
@@ -97,6 +106,7 @@ namespace PythonInstallation {
 	let _configPromise:
 		| Promise<{ repository: Uri; root: string | undefined }>
 		| undefined;
+
 	export async function getConfig(): Promise<{
 		repository: Uri;
 		root: string | undefined;
@@ -109,6 +119,7 @@ namespace PythonInstallation {
 	workspace.onDidChangeConfiguration((event) => {
 		if (event.affectsConfiguration("python.wasm")) {
 			_configPromise = undefined;
+
 			if (_repositoryWatcher !== undefined) {
 				_repositoryWatcher.dispose();
 				_repositoryWatcher = undefined;
@@ -119,9 +130,12 @@ namespace PythonInstallation {
 	});
 
 	let _repositoryWatcher: Disposable | undefined;
+
 	let preloadToken: number = 0;
+
 	async function triggerPreload(): Promise<void> {
 		const { repository, root } = await getConfig();
+
 		const isVSCodeVFS = repository.scheme === "vscode-vfs";
 		// We can only preload a repository if we are using a vscode virtual file system.
 		if (isVSCodeVFS && _repositoryWatcher === undefined) {
@@ -143,6 +157,7 @@ namespace PythonInstallation {
 
 			if (isVSCodeVFS) {
 				const remoteHubApi = await RemoteRepositories.getApi();
+
 				if (remoteHubApi.loadWorkspaceContents !== undefined) {
 					await remoteHubApi.loadWorkspaceContents(repository);
 				}
@@ -154,6 +169,7 @@ namespace PythonInstallation {
 				root !== undefined
 					? Uri.joinPath(repository, root, "python.wasm")
 					: Uri.joinPath(repository, "python.wasm");
+
 			try {
 				const bytes = await workspace.fs.readFile(binaryLocation);
 				// We didn't start another preload.
@@ -183,6 +199,7 @@ namespace PythonInstallation {
 	}
 
 	let _preload: Promise<void> | undefined;
+
 	export function preload(): Promise<void> {
 		if (_preload === undefined) {
 			_preload = triggerPreload();
@@ -191,6 +208,7 @@ namespace PythonInstallation {
 	}
 
 	let wasmBytes: SharedArrayBuffer | undefined;
+
 	export async function sharedWasmBytes(): Promise<SharedArrayBuffer> {
 		if (wasmBytes === undefined) {
 			await _preload;

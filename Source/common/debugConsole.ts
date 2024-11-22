@@ -40,6 +40,7 @@ export class DebugConsole implements CharacterDeviceDriver {
 
 	write(bytes: Uint8Array): Promise<number> {
 		this._onStdout.fire(this._decoder.decode(bytes.slice()));
+
 		return Promise.resolve(bytes.length);
 	}
 

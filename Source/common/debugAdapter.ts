@@ -21,22 +21,38 @@ import RAL from "./ral";
 import { Terminals } from "./terminals";
 
 const StackFrameRegex = /^[>,\s]+(.+)\((\d+)\)(.*)\(\)/;
+
 const TracebackFrameRegex = /^\s+File "(.+)", line (\d+)/;
+
 const ScrapeDirOutputRegex = /\[(.*)\]/;
+
 const BreakpointRegex = /Breakpoint (\d+) at (.+):(\d+)/;
+
 const PossibleStepExceptionRegex = /^\w+:\s+.*\r*\n>/;
+
 const PrintExceptionMessage = `debug_pdb_print_exc_message`;
+
 const SetupExceptionMessage = `alias debug_pdb_print_exc_message !import sys; print(sys.exc_info()[1], file=open('/$debug/output', 'w', -1, 'utf-8'))`;
+
 const PrintExceptionTraceback = `debug_pdb_print_exc_traceback`;
+
 const SetupExceptionTraceback = `alias debug_pdb_print_exc_traceback !import traceback; import sys; traceback.print_exc(file=open('/$debug/output', 'w', -1, 'utf-8'))`;
+
 const PrintExceptionVarMessage = `debug_pdb_print_exc_var_message`;
+
 const SetupExceptionVarMessage = `alias debug_pdb_print_exc_var_message !import sys; print(__exception__[1], file=open('/$debug/output', 'w', -1, 'utf-8'))`;
+
 const PrintExceptionVarTraceback = `debug_pdb_print_exc_var_traceback`;
+
 const SetupExceptionVarTraceback = `alias debug_pdb_print_exc_var_traceback !import traceback; import sys; traceback.print_exception(__exception__[1], file=open('/$debug/output', 'w', -1, 'utf-8'))`;
+
 const PdbTerminator = `(Pdb) `;
+
 const UncaughtExceptionOutput =
 	"Uncaught exception. Entering post mortem debugging";
+
 const ProgramFinishedOutput = "The program finished and will be restarted";
+
 const SyntaxErrorOutput = /^SyntaxError:\s+/gm;
 
 export type DebugProperties = {
@@ -253,6 +269,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 	private _terminate() {
 		if (this._launcher) {
 			this._writetostdin("exit\n");
+
 			const launcher = this._launcher;
 			this._launcher = undefined;
 			void launcher.terminate();
@@ -342,6 +359,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 		this._outputChain = current.then(() => {
 			return new Promise<string>((resolve, reject) => {
 				let output = "";
+
 				const disposable = this._debuggerDriver?.output((str) => {
 					// In command mode, remove carriage returns. Makes handling simpler
 					str = mode === "command" ? str.replace(/\r/g, "") : str;
@@ -364,6 +382,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 				generator();
 			});
 		});
+
 		return this._outputChain;
 	}
 
@@ -372,6 +391,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 		await this._pathMappingsComplete;
 
 		const normalized = wasmPath.replace(/\\/g, "/");
+
 		for (const [key, uri] of this._wasmPath2WorkspaceUri) {
 			if (normalized.startsWith(key)) {
 				return uri
@@ -393,6 +413,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 		} else {
 			try {
 				const output = vscode.Uri.file(path);
+
 				return output.toString();
 			} catch {
 				return path;
@@ -409,6 +430,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 		const normalized = this._convertToUriString(
 			workspacePath.replace(/\\/g, "/"),
 		);
+
 		for (const [key, wasmPath] of this._workspaceUri2WasmPath) {
 			if (normalized.startsWith(key)) {
 				return RAL().path.join(
@@ -440,10 +462,12 @@ export class DebugAdapter implements vscode.DebugAdapter {
 					const sepIndex = frameParts[1]
 						.replace(/\\/g, "/")
 						.lastIndexOf("/");
+
 					const name =
 						sepIndex >= 0
 							? frameParts[1].slice(sepIndex)
 							: frameParts[1];
+
 					const translatedPath = await this._translateToWorkspacePath(
 						frameParts[1],
 					);
@@ -470,6 +494,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 				id: i + 1,
 			};
 		});
+
 		return result;
 	}
 
@@ -535,6 +560,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 	) {
 		// Use the dir() python command to get back the list of current variables
 		const dir = await this._executecommand("dir()");
+
 		const scrapedDir = ScrapeDirOutputRegex.exec(dir);
 
 		// Go backwards through this list until we get something that starts without
@@ -556,11 +582,13 @@ export class DebugAdapter implements vscode.DebugAdapter {
 		const variables = await Promise.all(
 			entries.map(async (e) => {
 				const value = await this._executecommand(`p ${e}`);
+
 				const result: DebugProtocol.Variable = {
 					name: e,
 					value,
 					variablesReference: 0,
 				};
+
 				return result;
 			}),
 		);
@@ -635,6 +663,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 			const numbers = this._boundBreakpoints
 				.filter((b) => b.source?.path === message.arguments.source.path)
 				.map((b) => b.id);
+
 			if (numbers.length) {
 				await this._executecommand(`cl ${numbers.join(" ")}`);
 				this._boundBreakpoints = this._boundBreakpoints.filter(
@@ -650,10 +679,13 @@ export class DebugAdapter implements vscode.DebugAdapter {
 					const wasmPath = await this._translateFromWorkspacePath(
 						message.arguments.source.path || "",
 					);
+
 					const result = await this._executecommand(
 						`b ${wasmPath}:${b.line}`,
 					);
+
 					const parsed = BreakpointRegex.exec(result);
+
 					if (parsed) {
 						const breakpoint: DebugProtocol.Breakpoint = {
 							id: parseInt(parsed[1]),
@@ -693,11 +725,13 @@ export class DebugAdapter implements vscode.DebugAdapter {
 
 		// Otherwise no workspace folder and just a loose file. Use the starting file
 		const root = this._cwd?.toLowerCase().replace(/\\/g, "/");
+
 		return root ? file.toLowerCase().startsWith(root) : false;
 	}
 
 	private _handleProgramFinished(output: string) {
 		const finishedIndex = output.indexOf(ProgramFinishedOutput);
+
 		if (finishedIndex >= 0) {
 			this._sendToUserConsole(output.slice(0, finishedIndex));
 		}
@@ -707,6 +741,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 
 	private async _handleUncaughtException(output: string) {
 		const uncaughtIndex = output.indexOf(UncaughtExceptionOutput);
+
 		if (uncaughtIndex >= 0) {
 			this._sendToUserConsole(output.slice(0, uncaughtIndex));
 		}
@@ -720,6 +755,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 
 	private _handleFunctionReturn(output: string) {
 		const returnIndex = output.indexOf("--Return--");
+
 		if (returnIndex > 0) {
 			this._sendToUserConsole(output.slice(0, returnIndex));
 		}
@@ -728,6 +764,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 
 	private _handleFunctionCall(output: string) {
 		const callIndex = output.indexOf("--Call--");
+
 		if (callIndex > 0) {
 			this._sendToUserConsole(output.slice(0, callIndex));
 		}
@@ -745,6 +782,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 		// Filter out non 'frame' output. Send it to the output as
 		// it should be output from the process.
 		let nonFrameIndex = output.indexOf("\n> ");
+
 		if (nonFrameIndex >= 0) {
 			this._sendToUserConsole(output.slice(0, nonFrameIndex + 1));
 			output = output.slice(nonFrameIndex);
@@ -775,6 +813,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 	private async _switchCurrentFrame(newFrame: number) {
 		if (this._currentFrame !== newFrame) {
 			const count = newFrame - this._currentFrame;
+
 			const frameCommand = count > 0 ? "u" : "d";
 			await this._executecommand(`${frameCommand} ${Math.abs(count)}`);
 			this._currentFrame = newFrame;
@@ -785,6 +824,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 		// If at an unhandled exception, just terminate (user hit go after the exception happened)
 		if (this._uncaughtException) {
 			this._sendTerminated();
+
 			return;
 		}
 
@@ -819,10 +859,13 @@ export class DebugAdapter implements vscode.DebugAdapter {
 			program: string;
 			ptyInfo?: { uuid: string };
 		} = message.arguments as any;
+
 		const uuid = args.ptyInfo?.uuid;
+
 		const stdio: CharacterDeviceDriver = (() => {
 			if (uuid !== undefined) {
 				this._terminal = Terminals.getTerminalInUse(uuid)!;
+
 				return this._terminal;
 			} else {
 				this._debugConsole = new DebugConsole();
@@ -848,6 +891,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 						},
 					});
 				});
+
 				return this._debugConsole;
 			}
 		})();
@@ -862,6 +906,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 			.finally(() => {
 				this._launcher = undefined;
 				this._sendTerminated();
+
 				if (this._terminal !== undefined) {
 					Terminals.releaseExecutionTerminal(this._terminal, false);
 				}
@@ -906,8 +951,10 @@ export class DebugAdapter implements vscode.DebugAdapter {
 	private _handlePathMappings(mappings: PathMapping) {
 		this._wasmPath2WorkspaceUri.clear();
 		this._workspaceUri2WasmPath.clear();
+
 		for (const key of Object.keys(mappings)) {
 			const uri = vscode.Uri.from(mappings[key]);
+
 			if (key[key.length - 1] !== "/") {
 				this._wasmPath2WorkspaceUri.set(`${key}/`, uri);
 			} else {
@@ -992,6 +1039,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 	private async _handleEvaluate(message: DebugProtocol.EvaluateRequest) {
 		// Might have to switch frames
 		const startingFrame = this._currentFrame;
+
 		if (
 			message.arguments.frameId &&
 			message.arguments.frameId !== this._currentFrame
@@ -1005,6 +1053,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 		const command = message.arguments.expression.startsWith(`print(`)
 			? message.arguments.expression
 			: `p ${message.arguments.expression}`;
+
 		const output = await this._executecommand(command);
 
 		// Switch back to the starting frame if necessary
@@ -1031,11 +1080,13 @@ export class DebugAdapter implements vscode.DebugAdapter {
 	) {
 		// Get the current exception traceback
 		let msg = await this._executecommand(PrintExceptionMessage);
+
 		let traceback = await this._executecommand(PrintExceptionTraceback);
 
 		if (!msg || msg === "None\n") {
 			// See if we have __exception__ in our locals
 			const dir = await this._executecommand("dir()");
+
 			if (dir && dir.includes("__exception__")) {
 				msg = await this._executecommand(PrintExceptionVarMessage);
 				traceback = await this._executecommand(

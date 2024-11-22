@@ -142,17 +142,25 @@ export abstract class WasmRunner {
 		terminator?: string,
 	): Promise<number> {
 		const apiClient = new ApiClient(clientConnection);
+
 		const stdio = (await apiClient.serviceReady()).stdio;
+
 		const path = this.path;
 		// The is the name of the wasm to be execute (e.g. comparable to users typing it in bash)
 		const name = "python";
+
 		const workspaceFolders = apiClient.vscode.workspace.workspaceFolders;
+
 		const devices: DeviceDescription[] = [];
+
 		let toRun: string | undefined;
+
 		const pathMappings: { [key: string]: DTOs.UriComponents } =
 			Object.create(null);
+
 		if (workspaceFolders.length === 1) {
 			const folderUri = workspaceFolders[0].uri;
+
 			const device: DeviceDescription = {
 				kind: "fileSystem",
 				uri: workspaceFolders[0].uri,
@@ -160,6 +168,7 @@ export abstract class WasmRunner {
 			};
 			pathMappings[device.mountPoint] = device.uri.toJSON();
 			devices.push(device);
+
 			if (file !== undefined) {
 				if (file.toString().startsWith(folderUri.toString())) {
 					toRun = path.join(
@@ -202,6 +211,7 @@ export abstract class WasmRunner {
 				path: path.join(pythonInstallation.path, "lib/python3.11"),
 			})
 			.toJSON();
+
 		if (debug !== undefined && toRun !== undefined) {
 			const mainContent = DebugMain.create(toRun, terminator || "");
 			devices.push({
@@ -221,12 +231,14 @@ export abstract class WasmRunner {
 			toRun = "/$debug/main.py";
 		}
 		let exitCode: number | undefined;
+
 		const exitHandler = (rval: number): void => {
 			exitCode = rval;
 		};
 		this.connection.sendNotification("pathMappings", {
 			mapping: pathMappings,
 		});
+
 		const wasi = WASI.create(name, apiClient, exitHandler, devices, stdio, {
 			args:
 				toRun !== undefined
@@ -237,6 +249,7 @@ export abstract class WasmRunner {
 			},
 		});
 		await this.doRun(this.binary, wasi);
+
 		return exitCode ?? 0;
 	}
 

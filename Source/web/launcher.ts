@@ -28,10 +28,13 @@ export class WebLauncher extends BaseLauncher {
 			"./dist/web/pythonWasmWorker.js",
 		).toString();
 		this.worker = new Worker(filename);
+
 		const channel = new MessageChannel();
+
 		const ready = new Promise<void>((resolve, reject) => {
 			if (this.worker === undefined) {
 				reject(new Error(`Worker died unexpectedly.`));
+
 				return;
 			}
 			this.worker.onmessage = (event: MessageEvent<string>) => {
@@ -47,6 +50,7 @@ export class WebLauncher extends BaseLauncher {
 		});
 		this.worker.postMessage(channel.port2, [channel.port2]);
 		await ready;
+
 		return new SyncMessageConnection<
 			MessageRequests,
 			undefined,
@@ -59,10 +63,12 @@ export class WebLauncher extends BaseLauncher {
 		messageConnection: MessageConnection,
 	): Promise<[ApiServiceConnection, any]> {
 		const channel = new MessageChannel();
+
 		const result = new ServiceConnection<
 			Requests,
 			ApiServiceConnection.ReadyParams
 		>(channel.port1);
+
 		return [result, channel.port2];
 	}
 
