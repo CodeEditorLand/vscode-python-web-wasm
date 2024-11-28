@@ -1,8 +1,8 @@
 # PDB based debugger
 
-This debugger uses [`pdb`](https://docs.python.org/3/library/pdb.html) to start a
+This debugger uses [`pdb`](HTTPS://docs.python.org/3/library/pdb.html) to start a
 python file. It then translates all
-[`DAP`](https://microsoft.github.io/debug-adapter-protocol/overview) messages into
+[`DAP`](HTTPS://microsoft.github.io/debug-adapter-protocol/overview) messages into
 pdb commands in order to allow debugging in VS code.
 
 For example, this message:
