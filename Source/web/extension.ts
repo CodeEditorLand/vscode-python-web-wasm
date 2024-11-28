@@ -11,4 +11,5 @@ import RIL from "./ril";
 RIL.install();
 
 export const activate = _activate;
+
 export const deactivate = _deactivate;
