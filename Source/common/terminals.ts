@@ -10,6 +10,7 @@ import RAL from "./ral";
 
 export namespace Terminals {
 	type TerminalIdleInfo = [Terminal, ServicePseudoTerminal, Disposable];
+
 	type TerminalInUseInfo = [Terminal, ServicePseudoTerminal];
 
 	const idleTerminals: Map<string, TerminalIdleInfo> = new Map();
@@ -59,22 +60,27 @@ export namespace Terminals {
 				idleTerminals.delete(entry.value[0]);
 
 				const info = entry.value[1];
+
 				info[2].dispose();
 
 				const terminal = info[0];
 
 				const pty = info[1];
+
 				pty.setMode(TerminalMode.inUse);
+
 				pty.setName(terminalName);
 
 				if (show) {
 					terminal.show(preserveFocus);
 				}
+
 				if (header !== undefined) {
 					pty.writeString(
 						formatMessageForTerminal(header, true, true),
 					);
 				}
+
 				terminalsInUse.set(pty.id, [terminal, pty]);
 
 				return pty;
@@ -84,7 +90,9 @@ export namespace Terminals {
 		// We haven't found an idle terminal. So create a new one;
 
 		const pty = ServicePseudoTerminal.create();
+
 		pty.setMode(TerminalMode.inUse);
+
 		pty.onDidClose(() => {
 			clearTerminal(pty);
 		});
@@ -98,10 +106,13 @@ export namespace Terminals {
 		if (show) {
 			terminal.show(preserveFocus);
 		}
+
 		if (header !== undefined) {
 			pty.writeString(formatMessageForTerminal(header, false, true));
 		}
+
 		const info: TerminalInUseInfo = [terminal, pty];
+
 		terminalsInUse.set(pty.id, info);
 
 		return pty;
@@ -114,6 +125,7 @@ export namespace Terminals {
 		const footer = terminated
 			? `Python execution got terminated. The terminal will be reused, press any key to close it.`
 			: `Terminal will be reused, press any key to close it.`;
+
 		releaseTerminal(pty, footer);
 	}
 
@@ -124,6 +136,7 @@ export namespace Terminals {
 		const footer = terminated
 			? `Repl execution got terminated. The terminal will be reused, press any key to close it.`
 			: `Terminal will be reused, press any key to close it.`;
+
 		releaseTerminal(pty, footer);
 	}
 
@@ -135,21 +148,29 @@ export namespace Terminals {
 		if (info === undefined) {
 			return;
 		}
+
 		pty.setMode(TerminalMode.idle);
+
 		pty.writeString(formatMessageForTerminal(footer, true, false));
 
 		const disposable = pty.onAnyKey(() => {
 			const terminal = findTerminal(pty.id);
+
 			clearTerminal(pty);
+
 			terminal?.dispose();
 		});
+
 		terminalsInUse.delete(id);
+
 		idleTerminals.set(id, [info[0], info[1], disposable]);
 	}
 
 	function clearTerminal(pty: ServicePseudoTerminal): void {
 		const id = pty.id;
+
 		terminalsInUse.delete(id);
+
 		idleTerminals.delete(id);
 	}
 

@@ -57,34 +57,57 @@ const SyntaxErrorOutput = /^SyntaxError:\s+/gm;
 
 export type DebugProperties = {
 	program: string;
+
 	args?: string[];
+
 	stopOnEntry?: boolean;
+
 	console?: "internalConsole" | "integratedTerminal";
 };
 
 export class DebugAdapter implements vscode.DebugAdapter {
 	private _launcher: Launcher | undefined;
+
 	private _debuggerDriver: DebugCharacterDeviceDriver | undefined;
+
 	private _debugConsole: DebugConsole | undefined;
+
 	private _terminal: ServicePseudoTerminal | undefined;
+
 	private _cwd: string | undefined;
+
 	private _sequence = 0;
+
 	private _outputChain: Promise<string> | undefined;
+
 	private _stopped = true;
+
 	private _stopOnEntry = false;
+
 	private _currentFrame = 1;
+
 	private _disposed = false;
+
 	private _uncaughtException = false;
+
 	private _workspaceFolder: vscode.WorkspaceFolder | undefined;
+
 	private _boundBreakpoints: DebugProtocol.Breakpoint[] = [];
+
 	private _didSendMessageEmitter: vscode.EventEmitter<
 		DebugProtocol.Response | DebugProtocol.Event
 	> = new vscode.EventEmitter<DebugProtocol.Response | DebugProtocol.Event>();
+
 	private _launchComplete: Promise<string>;
+
 	private _launchCompleteResolver: ((value: string) => void) | undefined;
+
 	private _pathMappingsComplete: Promise<void>;
+
 	private _pathMappingsCompleteResolver: (() => void) | undefined;
+
 	private _wasmPath2WorkspaceUri: Map<string, vscode.Uri>;
+
 	private _workspaceUri2WasmPath: Map<string, string>;
 
 	constructor(
@@ -93,25 +116,33 @@ export class DebugAdapter implements vscode.DebugAdapter {
 		private readonly _ral: RAL,
 	) {
 		this._stopOnEntry = session.configuration.stopOnEntry;
+
 		this._workspaceFolder =
 			session.workspaceFolder ||
 			(vscode.workspace.workspaceFolders
 				? vscode.workspace.workspaceFolders[0]
 				: undefined);
+
 		this._cwd =
 			session.configuration.cwd ?? this._workspaceFolder?.uri.toString();
+
 		this._launchComplete = new Promise((resolve, reject) => {
 			this._launchCompleteResolver = resolve;
 		});
+
 		this._pathMappingsComplete = new Promise((resolve, reject) => {
 			this._pathMappingsCompleteResolver = resolve;
 		});
+
 		this._wasmPath2WorkspaceUri = new Map();
+
 		this._workspaceUri2WasmPath = new Map();
 	}
+
 	get onDidSendMessage(): vscode.Event<DebugProtocol.ProtocolMessage> {
 		return this._didSendMessageEmitter.event;
 	}
+
 	handleMessage(message: DebugProtocol.ProtocolMessage): void {
 		if (message.type === "request") {
 			this._handleRequest(message as DebugProtocol.Request).catch(
@@ -125,6 +156,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 			);
 		}
 	}
+
 	dispose() {
 		// Hack, readlinecallback needs to be reset. We likely have an outstanding promise
 		if (!this._disposed) {
@@ -226,11 +258,13 @@ export class DebugAdapter implements vscode.DebugAdapter {
 
 	private _sendResponse<T extends DebugProtocol.Response>(response: T) {
 		this._sequence += 1;
+
 		this._didSendMessageEmitter.fire({ ...response, seq: this._sequence });
 	}
 
 	private _sendEvent<T extends DebugProtocol.Event>(event: T) {
 		this._sequence += 1;
+
 		this._didSendMessageEmitter.fire({ ...event, seq: this._sequence });
 	}
 
@@ -271,14 +305,18 @@ export class DebugAdapter implements vscode.DebugAdapter {
 			this._writetostdin("exit\n");
 
 			const launcher = this._launcher;
+
 			this._launcher = undefined;
+
 			void launcher.terminate();
 		}
 	}
 
 	private _handleDisconnect(message: DebugProtocol.DisconnectRequest) {
 		this._terminate();
+
 		this._sendToUserConsole(`Process exited.`);
+
 		this._sendResponse<DebugProtocol.DisconnectResponse>({
 			type: "response",
 			request_seq: message.seq,
@@ -356,6 +394,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 		generator: () => void,
 	): Promise<string> {
 		const current = this._outputChain ?? Promise.resolve("");
+
 		this._outputChain = current.then(() => {
 			return new Promise<string>((resolve, reject) => {
 				let output = "";
@@ -367,8 +406,11 @@ export class DebugAdapter implements vscode.DebugAdapter {
 					// We are finished when the output ends with `(Pdb) `
 					if (str.endsWith(PdbTerminator)) {
 						disposable?.dispose();
+
 						output = `${output}${str.slice(0, str.length - PdbTerminator.length)}`;
+
 						this._stopped = true;
+
 						resolve(output);
 					} else if (mode === "run") {
 						// In run mode, send to console
@@ -378,7 +420,9 @@ export class DebugAdapter implements vscode.DebugAdapter {
 						output = `${output}${str}`;
 					}
 				});
+
 				this._stopped = false;
+
 				generator();
 			});
 		});
@@ -404,6 +448,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 					.toString();
 			}
 		}
+
 		return normalized;
 	}
 
@@ -439,6 +484,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 				);
 			}
 		}
+
 		return normalized;
 	}
 
@@ -458,6 +504,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 				if (!frameParts) {
 					frameParts = TracebackFrameRegex.exec(line);
 				}
+
 				if (frameParts) {
 					const sepIndex = frameParts[1]
 						.replace(/\\/g, "/")
@@ -510,6 +557,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 		// If no frames, might need the stack trace from the an uncaught exception
 		if (this._uncaughtException && stackFrames.length === 0) {
 			frames = await this._executecommand(PrintExceptionTraceback);
+
 			stackFrames = (await this._parseStackFrames(frames)).filter(
 				(f) => f.source?.path && this._isMyCode(f.source?.path),
 			);
@@ -635,6 +683,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 
 	private _sendTerminated() {
 		this._terminate();
+
 		this._sendEvent<DebugProtocol.TerminatedEvent>({
 			type: "event",
 			event: "terminated",
@@ -644,6 +693,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 
 	private _handleTerminate(message: DebugProtocol.TerminateRequest) {
 		this._sendTerminated();
+
 		this._sendResponse<DebugProtocol.TerminateResponse>({
 			success: true,
 			command: message.command,
@@ -666,6 +716,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 
 			if (numbers.length) {
 				await this._executecommand(`cl ${numbers.join(" ")}`);
+
 				this._boundBreakpoints = this._boundBreakpoints.filter(
 					(b) => b.source?.path !== message.arguments.source.path,
 				);
@@ -697,7 +748,9 @@ export class DebugAdapter implements vscode.DebugAdapter {
 							},
 							verified: true,
 						};
+
 						this._boundBreakpoints.push(breakpoint);
+
 						results.push(breakpoint);
 					}
 				}),
@@ -759,6 +812,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 		if (returnIndex > 0) {
 			this._sendToUserConsole(output.slice(0, returnIndex));
 		}
+
 		return this._executerun("s");
 	}
 
@@ -768,6 +822,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 		if (callIndex > 0) {
 			this._sendToUserConsole(output.slice(0, callIndex));
 		}
+
 		return this._executerun("s");
 	}
 
@@ -785,6 +840,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 
 		if (nonFrameIndex >= 0) {
 			this._sendToUserConsole(output.slice(0, nonFrameIndex + 1));
+
 			output = output.slice(nonFrameIndex);
 		}
 
@@ -807,6 +863,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 							b.source?.path === frames[0].source?.path,
 					)
 				: undefined;
+
 		this._sendStoppedEvent("step", match);
 	}
 
@@ -815,7 +872,9 @@ export class DebugAdapter implements vscode.DebugAdapter {
 			const count = newFrame - this._currentFrame;
 
 			const frameCommand = count > 0 ? "u" : "d";
+
 			await this._executecommand(`${frameCommand} ${Math.abs(count)}`);
+
 			this._currentFrame = newFrame;
 		}
 	}
@@ -843,6 +902,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 			return this._parseStoppedOutput(output, runcommand);
 		}, 1);
 	}
+
 	private async _continue() {
 		// see https://docs.python.org/3/library/pdb.html#pdbcommand-continue
 		// Send a continue command. Waiting for the first output.
@@ -855,8 +915,10 @@ export class DebugAdapter implements vscode.DebugAdapter {
 		if (this._launcher !== undefined) {
 			return;
 		}
+
 		const args: DebugProtocol.LaunchRequestArguments & {
 			program: string;
+
 			ptyInfo?: { uuid: string };
 		} = message.arguments as any;
 
@@ -869,6 +931,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 				return this._terminal;
 			} else {
 				this._debugConsole = new DebugConsole();
+
 				this._debugConsole.onStdout((value) => {
 					this._sendEvent<DebugProtocol.OutputEvent>({
 						type: "event",
@@ -880,6 +943,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 						},
 					});
 				});
+
 				this._debugConsole.onStderr((value) => {
 					this._sendEvent<DebugProtocol.OutputEvent>({
 						type: "event",
@@ -895,8 +959,11 @@ export class DebugAdapter implements vscode.DebugAdapter {
 				return this._debugConsole;
 			}
 		})();
+
 		this._launcher = RAL().launcher.create();
+
 		this._launcher.onPathMapping(this._handlePathMappings.bind(this));
+
 		this._launcher
 			.onExit()
 			.then((_rval) => {})
@@ -905,12 +972,14 @@ export class DebugAdapter implements vscode.DebugAdapter {
 			})
 			.finally(() => {
 				this._launcher = undefined;
+
 				this._sendTerminated();
 
 				if (this._terminal !== undefined) {
 					Terminals.releaseExecutionTerminal(this._terminal, false);
 				}
 			});
+
 		this._debuggerDriver = new DebugCharacterDeviceDriver();
 
 		// Wait for debuggee to emit first bit of output before continuing. First bit of output may be an exception that the program crashed
@@ -926,8 +995,11 @@ export class DebugAdapter implements vscode.DebugAdapter {
 
 		// Setup an alias for printing exc info
 		await this._executecommand(SetupExceptionMessage);
+
 		await this._executecommand(SetupExceptionTraceback);
+
 		await this._executecommand(SetupExceptionVarMessage);
+
 		await this._executecommand(SetupExceptionVarTraceback);
 
 		// Send a message to the debug console to indicate started debugging
@@ -950,6 +1022,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 
 	private _handlePathMappings(mappings: PathMapping) {
 		this._wasmPath2WorkspaceUri.clear();
+
 		this._workspaceUri2WasmPath.clear();
 
 		for (const key of Object.keys(mappings)) {
@@ -960,8 +1033,10 @@ export class DebugAdapter implements vscode.DebugAdapter {
 			} else {
 				this._wasmPath2WorkspaceUri.set(key, uri);
 			}
+
 			this._workspaceUri2WasmPath.set(`${uri.toString()}/`, key);
 		}
+
 		this._pathMappingsCompleteResolver!();
 	}
 
@@ -991,6 +1066,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 				allThreadsContinued: true,
 			},
 		});
+
 		void this._continue();
 	}
 
@@ -1005,6 +1081,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 				allThreadsContinued: true,
 			},
 		});
+
 		void this._stepOver();
 	}
 
@@ -1019,6 +1096,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 				allThreadsContinued: true,
 			},
 		});
+
 		void this._stepInto();
 	}
 
@@ -1033,6 +1111,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 				allThreadsContinued: true,
 			},
 		});
+
 		void this._stepOutOf();
 	}
 
@@ -1089,6 +1168,7 @@ export class DebugAdapter implements vscode.DebugAdapter {
 
 			if (dir && dir.includes("__exception__")) {
 				msg = await this._executecommand(PrintExceptionVarMessage);
+
 				traceback = await this._executecommand(
 					PrintExceptionVarTraceback,
 				);

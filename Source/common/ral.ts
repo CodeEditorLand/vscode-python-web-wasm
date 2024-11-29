@@ -10,8 +10,11 @@ interface RAL {
 	readonly launcher: {
 		create(): Launcher;
 	};
+
 	readonly path: IPath;
+
 	readonly isCrossOriginIsolated: boolean;
+
 	readonly timer: {
 		setTimeout(callback: () => void, timeout: number): any;
 	};
@@ -23,6 +26,7 @@ function RAL(): RAL {
 	if (_ral === undefined) {
 		throw new Error(`No runtime abstraction layer installed`);
 	}
+
 	return _ral;
 }
 
@@ -31,6 +35,7 @@ namespace RAL {
 		if (ral === undefined) {
 			throw new Error(`No runtime abstraction layer provided`);
 		}
+
 		_ral = ral;
 	}
 }

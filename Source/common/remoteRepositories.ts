@@ -35,6 +35,7 @@ namespace RemoteRepositories {
 		if (remoteHub === undefined) {
 			throw new Error(`No Remote repository extension found.`);
 		}
+
 		return remoteHub;
 	}
 

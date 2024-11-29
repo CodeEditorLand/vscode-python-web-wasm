@@ -7,22 +7,28 @@ import { DebugProtocol } from "@vscode/debugprotocol";
 
 export class Message implements DebugProtocol.ProtocolMessage {
 	seq: number;
+
 	type: string;
 
 	public constructor(type: string) {
 		this.seq = 0;
+
 		this.type = type;
 	}
 }
 
 export class Response extends Message implements DebugProtocol.Response {
 	request_seq: number;
+
 	success: boolean;
+
 	command: string;
 
 	public constructor(request: DebugProtocol.Request, message?: string) {
 		super("response");
+
 		this.request_seq = request.seq;
+
 		this.command = request.command;
 
 		if (message) {
@@ -39,6 +45,7 @@ export class Event extends Message implements DebugProtocol.Event {
 
 	public constructor(event: string, body?: any) {
 		super("event");
+
 		this.event = event;
 
 		if (body) {

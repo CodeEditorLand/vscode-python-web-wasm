@@ -20,17 +20,20 @@ declare namespace WebAssembly {
 
 	var CompileError: {
 		prototype: CompileError;
+
 		new (message?: string): CompileError;
 		(message?: string): CompileError;
 	};
 
 	interface Global {
 		value: any;
+
 		valueOf(): any;
 	}
 
 	var Global: {
 		prototype: Global;
+
 		new (descriptor: GlobalDescriptor, v?: any): Global;
 	};
 
@@ -40,6 +43,7 @@ declare namespace WebAssembly {
 
 	var Instance: {
 		prototype: Instance;
+
 		new (module: Module, importObject?: Imports): Instance;
 	};
 
@@ -47,17 +51,20 @@ declare namespace WebAssembly {
 
 	var LinkError: {
 		prototype: LinkError;
+
 		new (message?: string): LinkError;
 		(message?: string): LinkError;
 	};
 
 	interface Memory {
 		readonly buffer: ArrayBuffer;
+
 		grow(delta: number): number;
 	}
 
 	var Memory: {
 		prototype: Memory;
+
 		new (descriptor: MemoryDescriptor): Memory;
 	};
 
@@ -65,7 +72,9 @@ declare namespace WebAssembly {
 
 	var Module: {
 		prototype: Module;
+
 		new (bytes: BufferSource): Module;
+
 		customSections(
 			moduleObject: Module,
 			sectionName: string,
@@ -80,6 +89,7 @@ declare namespace WebAssembly {
 
 	var RuntimeError: {
 		prototype: RuntimeError;
+
 		new (message?: string): RuntimeError;
 		(message?: string): RuntimeError;
 	};
@@ -88,6 +98,7 @@ declare namespace WebAssembly {
 		readonly length: number;
 
 		get(index: number): any;
+
 		grow(delta: number, value?: any): number;
 
 		set(index: number, value?: any): void;
@@ -95,44 +106,56 @@ declare namespace WebAssembly {
 
 	var Table: {
 		prototype: Table;
+
 		new (descriptor: TableDescriptor, value?: any): Table;
 	};
 
 	interface GlobalDescriptor {
 		mutable?: boolean;
+
 		value: ValueType;
 	}
 
 	interface MemoryDescriptor {
 		initial: number;
+
 		maximum?: number;
+
 		shared?: boolean;
 	}
 
 	interface ModuleExportDescriptor {
 		kind: ImportExportKind;
+
 		name: string;
 	}
 
 	interface ModuleImportDescriptor {
 		kind: ImportExportKind;
+
 		module: string;
+
 		name: string;
 	}
 
 	interface TableDescriptor {
 		element: TableKind;
+
 		initial: number;
+
 		maximum?: number;
 	}
 
 	interface WebAssemblyInstantiatedSource {
 		instance: Instance;
+
 		module: Module;
 	}
 
 	type ImportExportKind = "function" | "global" | "memory" | "table";
+
 	type TableKind = "anyfunc" | "externref";
+
 	type ValueType =
 		| "anyfunc"
 		| "externref"
@@ -141,10 +164,15 @@ declare namespace WebAssembly {
 		| "i32"
 		| "i64"
 		| "v128";
+
 	type ExportValue = Function | Global | Memory | Table;
+
 	type Exports = Record<string, ExportValue>;
+
 	type ImportValue = ExportValue | number;
+
 	type Imports = Record<string, ModuleImports>;
+
 	type ModuleImports = Record<string, ImportValue>;
 
 	function compile(bytes: BufferSource): Promise<Module>;

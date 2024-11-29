@@ -27,7 +27,9 @@ export type MessageConnection = BaseMessageConnection<
 
 type LauncherState = {
 	mode: "run" | "debug" | "repl";
+
 	stdio?: CharacterDeviceDriver;
+
 	program?: string;
 };
 
@@ -102,7 +104,9 @@ export type PathMapping = {
 
 export abstract class BaseLauncher {
 	private readonly exitPromise: Promise<number>;
+
 	private exitResolveCallback!: (value: number) => void;
+
 	private exitRejectCallback!: (reason: any) => void;
 
 	private terminal: Terminal | undefined;
@@ -114,9 +118,12 @@ export abstract class BaseLauncher {
 	public constructor() {
 		this.exitPromise = new Promise((resolve, reject) => {
 			this.exitResolveCallback = resolve;
+
 			this.exitRejectCallback = reject;
 		});
+
 		this._onPathMapping = new EventEmitter();
+
 		this.onPathMapping = this._onPathMapping.event;
 	}
 
@@ -164,6 +171,7 @@ export abstract class BaseLauncher {
 		stdio: CharacterDeviceDriver,
 		program: string,
 	): Promise<void>;
+
 	private doRun(
 		mode: "debug",
 		context: ExtensionContext,
@@ -172,11 +180,13 @@ export abstract class BaseLauncher {
 		debugPorts: DebugCharacterDeviceDriver,
 		terminator: string,
 	): Promise<void>;
+
 	private doRun(
 		mode: "repl",
 		context: ExtensionContext,
 		stdio: CharacterDeviceDriver,
 	): Promise<void>;
+
 	private async doRun(
 		mode: "run" | "debug" | "repl",
 		context: ExtensionContext,
@@ -195,6 +205,7 @@ export abstract class BaseLauncher {
 			]);
 
 		messageConnection.listen();
+
 		messageConnection.onNotification("pathMappings", (params) => {
 			this._onPathMapping.fire(params.mapping);
 		});
@@ -222,6 +233,7 @@ export abstract class BaseLauncher {
 		if (mode === "debug") {
 			apiService.registerCharacterDeviceDriver(debugPorts!, false);
 		}
+
 		apiService.signalReady();
 
 		const runRequest: Promise<number> =
@@ -273,6 +285,7 @@ export abstract class BaseLauncher {
 		if (this.terminal !== undefined) {
 			this.terminal.sendText(`Execution terminated`, true);
 		}
+
 		return this.terminateConnection();
 	}
 

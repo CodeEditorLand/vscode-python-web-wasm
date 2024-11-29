@@ -27,6 +27,7 @@ export class WebLauncher extends BaseLauncher {
 			context.extensionUri,
 			"./dist/web/pythonWasmWorker.js",
 		).toString();
+
 		this.worker = new Worker(filename);
 
 		const channel = new MessageChannel();
@@ -37,18 +38,22 @@ export class WebLauncher extends BaseLauncher {
 
 				return;
 			}
+
 			this.worker.onmessage = (event: MessageEvent<string>) => {
 				if (event.data === "ready") {
 					resolve();
 				} else {
 					reject(new Error(`Missing ready event from worker`));
 				}
+
 				if (this.worker !== undefined) {
 					this.worker.onmessage = null;
 				}
 			};
 		});
+
 		this.worker.postMessage(channel.port2, [channel.port2]);
+
 		await ready;
 
 		return new SyncMessageConnection<

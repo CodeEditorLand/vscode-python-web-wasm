@@ -45,6 +45,7 @@ class NodeWasmRunner extends WasmRunner {
 		const { instance } = await WebAssembly.instantiate(binary, {
 			wasi_snapshot_preview1: wasi,
 		});
+
 		wasi.initialize(instance);
 		(instance.exports._start as Function)();
 	}
@@ -52,6 +53,8 @@ class NodeWasmRunner extends WasmRunner {
 
 parentPort.on("message", (port: MessagePort) => {
 	const runner = new NodeWasmRunner(port);
+
 	runner.listen();
+
 	parentPort?.postMessage("ready");
 });

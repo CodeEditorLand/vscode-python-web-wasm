@@ -17,6 +17,7 @@ namespace PythonInstallation {
 
 	async function resolveConfiguration(): Promise<{
 		repository: Uri;
+
 		root: string | undefined;
 	}> {
 		const path = RAL().path;
@@ -35,7 +36,9 @@ namespace PythonInstallation {
 			pythonRepository.length === 0
 		) {
 			pythonRepository = defaultPythonRepository;
+
 			pythonRoot = defaultPythonRoot;
+
 			isDefault = true;
 		}
 
@@ -51,7 +54,9 @@ namespace PythonInstallation {
 
 		if (pythonRepositoryUri === undefined) {
 			pythonRepositoryUri = Uri.parse(defaultPythonRepository);
+
 			pythonRoot = defaultPythonRoot;
+
 			isDefault = true;
 		}
 
@@ -66,7 +71,9 @@ namespace PythonInstallation {
 					path: uriPath.substring(0, uriPath.length - extname.length),
 				});
 			}
+
 			const api = await RemoteRepositories.getApi();
+
 			pythonRepositoryUri = api.getVirtualUri(
 				pythonRepositoryUri.with({ authority: "github" }),
 			);
@@ -79,7 +86,9 @@ namespace PythonInstallation {
 					pythonRepositoryUri,
 					pythonRoot,
 				);
+
 				await workspace.fs.stat(binaryLocation);
+
 				Tracer.append(`Using Python from ${pythonRepositoryUri}`);
 			} catch (error) {
 				Tracer.append(
@@ -87,13 +96,17 @@ namespace PythonInstallation {
 				);
 
 				const api = await RemoteRepositories.getApi();
+
 				pythonRepositoryUri = api.getVirtualUri(
 					Uri.parse(defaultPythonRepository).with({
 						authority: "github",
 					}),
 				);
+
 				pythonRoot = defaultPythonRoot;
+
 				isDefault = true;
+
 				Tracer.append(
 					`Falling back to default Python repository ${pythonRepositoryUri}`,
 				);
@@ -109,22 +122,28 @@ namespace PythonInstallation {
 
 	export async function getConfig(): Promise<{
 		repository: Uri;
+
 		root: string | undefined;
 	}> {
 		if (_configPromise === undefined) {
 			_configPromise = resolveConfiguration();
 		}
+
 		return _configPromise;
 	}
+
 	workspace.onDidChangeConfiguration((event) => {
 		if (event.affectsConfiguration("python.wasm")) {
 			_configPromise = undefined;
 
 			if (_repositoryWatcher !== undefined) {
 				_repositoryWatcher.dispose();
+
 				_repositoryWatcher = undefined;
 			}
+
 			_preload = undefined;
+
 			preload().catch(console.error);
 		}
 	});
@@ -142,16 +161,20 @@ namespace PythonInstallation {
 			const fsWatcher = workspace.createFileSystemWatcher(
 				new RelativePattern(repository, "*"),
 			);
+
 			_repositoryWatcher = fsWatcher.onDidChange(async (uri) => {
 				if (uri.toString() === repository.toString()) {
 					Tracer.append(
 						`Repository ${repository.toString()} changed. Pre-load it again.`,
 					);
+
 					_preload = undefined;
+
 					preload().catch(console.error);
 				}
 			});
 		}
+
 		try {
 			const token = ++preloadToken;
 
@@ -161,10 +184,12 @@ namespace PythonInstallation {
 				if (remoteHubApi.loadWorkspaceContents !== undefined) {
 					await remoteHubApi.loadWorkspaceContents(repository);
 				}
+
 				Tracer.append(
 					`Successfully loaded workspace content for repository ${repository.toString()}`,
 				);
 			}
+
 			const binaryLocation =
 				root !== undefined
 					? Uri.joinPath(repository, root, "python.wasm")
@@ -175,25 +200,31 @@ namespace PythonInstallation {
 				// We didn't start another preload.
 				if (token === preloadToken) {
 					const buffer = new SharedArrayBuffer(bytes.byteLength);
+
 					new Uint8Array(buffer).set(bytes);
+
 					Tracer.append(
 						`Successfully cached WASM file ${binaryLocation.toString()}`,
 					);
+
 					wasmBytes = buffer;
 				} else {
 					wasmBytes = undefined;
 				}
 			} catch (error) {
 				wasmBytes = undefined;
+
 				Tracer.append(
 					`Caching WASM file ${binaryLocation.toString()} failed`,
 				);
+
 				console.error(error);
 			}
 		} catch (error) {
 			Tracer.append(
 				`Loading workspace content for repository ${repository.toString()} failed: ${error instanceof Error ? error.toString() : "Unknown reason"}`,
 			);
+
 			console.error(error);
 		}
 	}
@@ -204,6 +235,7 @@ namespace PythonInstallation {
 		if (_preload === undefined) {
 			_preload = triggerPreload();
 		}
+
 		return _preload;
 	}
 
@@ -213,9 +245,11 @@ namespace PythonInstallation {
 		if (wasmBytes === undefined) {
 			await _preload;
 		}
+
 		if (wasmBytes === undefined) {
 			throw new Error(`Load python.wasm file failed`);
 		}
+
 		return wasmBytes;
 	}
 

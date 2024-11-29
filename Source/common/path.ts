@@ -28,11 +28,18 @@
 
 export interface IPath {
 	dirname(path: string): string;
+
 	normalize(path: string): string;
+
 	isAbsolute(path: string): boolean;
+
 	join(...paths: string[]): string;
+
 	basename(path: string, ext?: string): string;
+
 	extname(path: string): string;
+
 	sep: string;
+
 	delimiter: string;
 }

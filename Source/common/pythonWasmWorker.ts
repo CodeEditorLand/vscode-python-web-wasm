@@ -67,13 +67,16 @@ run(debugger, target)`;
 
 export abstract class WasmRunner {
 	private pythonRepository!: URI;
+
 	private pythonRoot: string | undefined;
+
 	private binary!: Uint8Array;
 
 	constructor(
 		private readonly connection: MessageConnection,
 		private readonly path: {
 			readonly join: (...paths: string[]) => string;
+
 			readonly sep: string;
 		},
 	) {
@@ -81,8 +84,11 @@ export abstract class WasmRunner {
 
 		connection.onRequest("initialize", async (params) => {
 			this.binary = new Uint8Array(params.binary.byteLength);
+
 			this.binary.set(new Uint8Array(params.binary));
+
 			this.pythonRepository = URI.parse(params.pythonRepository);
+
 			this.pythonRoot = params.pythonRoot;
 		});
 
@@ -166,7 +172,9 @@ export abstract class WasmRunner {
 				uri: workspaceFolders[0].uri,
 				mountPoint: path.join(path.sep, "workspace"),
 			};
+
 			pathMappings[device.mountPoint] = device.uri.toJSON();
+
 			devices.push(device);
 
 			if (file !== undefined) {
@@ -185,10 +193,13 @@ export abstract class WasmRunner {
 					uri: folder.uri,
 					mountPoint: path.join(path.sep, "workspaces", folder.name),
 				};
+
 				pathMappings[device.mountPoint] = device.uri.toJSON();
+
 				devices.push(device);
 			}
 		}
+
 		const pythonInstallation =
 			this.pythonRoot === undefined
 				? this.pythonRepository
@@ -206,6 +217,7 @@ export abstract class WasmRunner {
 			uri: pythonInstallation,
 			mountPoint: path.sep,
 		});
+
 		pathMappings["/lib/python3.11"] = pythonInstallation
 			.with({
 				path: path.join(pythonInstallation.path, "lib/python3.11"),
@@ -214,6 +226,7 @@ export abstract class WasmRunner {
 
 		if (debug !== undefined && toRun !== undefined) {
 			const mainContent = DebugMain.create(toRun, terminator || "");
+
 			devices.push({
 				kind: "custom",
 				uri: debug,
@@ -228,13 +241,16 @@ export abstract class WasmRunner {
 					);
 				},
 			});
+
 			toRun = "/$debug/main.py";
 		}
+
 		let exitCode: number | undefined;
 
 		const exitHandler = (rval: number): void => {
 			exitCode = rval;
 		};
+
 		this.connection.sendNotification("pathMappings", {
 			mapping: pathMappings,
 		});
@@ -248,6 +264,7 @@ export abstract class WasmRunner {
 				PYTHONPATH: "/workspace:/site-packages",
 			},
 		});
+
 		await this.doRun(this.binary, wasi);
 
 		return exitCode ?? 0;

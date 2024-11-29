@@ -36,6 +36,7 @@ class WebWasmRunner extends WasmRunner {
 		const { instance } = await WebAssembly.instantiate(binary, {
 			wasi_snapshot_preview1: wasi,
 		});
+
 		wasi.initialize(instance);
 		(instance.exports._start as Function)();
 	}
@@ -43,6 +44,8 @@ class WebWasmRunner extends WasmRunner {
 
 self.onmessage = (event: MessageEvent<MessagePort>) => {
 	const runner = new WebWasmRunner(event.data);
+
 	runner.listen();
+
 	self.postMessage("ready");
 };

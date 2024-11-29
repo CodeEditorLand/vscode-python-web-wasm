@@ -28,6 +28,7 @@ function isCossOriginIsolated(): boolean {
 	if (RAL().isCrossOriginIsolated) {
 		return true;
 	}
+
 	void window.showWarningMessage(
 		`Executing Python needs cross origin isolation. You need to \nadd ?vscode-coi= to your browser URL to enable it.`,
 		{ modal: true },
@@ -63,6 +64,7 @@ export class DebugConfigurationProvider implements DebugConfigurationProvider {
 		if (!isCossOriginIsolated()) {
 			return undefined;
 		}
+
 		await this.preloadPromise;
 
 		if (!config.type && !config.request && !config.name) {
@@ -70,10 +72,15 @@ export class DebugConfigurationProvider implements DebugConfigurationProvider {
 
 			if (editor && editor.document.languageId === "python") {
 				config.type = "python-web-wasm";
+
 				config.name = "Launch";
+
 				config.request = "launch";
+
 				config.program = "${file}";
+
 				config.stopOnEntry = true;
+
 				config.console = "internalConsole";
 			}
 		}
@@ -107,6 +114,7 @@ export class DebugConfigurationProvider implements DebugConfigurationProvider {
 			targetResource !== undefined
 		) {
 			const pty = Terminals.getExecutionTerminal(targetResource, true);
+
 			pty.setMode(TerminalMode.idle); // DebugAdapter will switch to in use
 			config.ptyInfo = { uuid: pty.id };
 		}
@@ -122,6 +130,7 @@ export class DebugAdapterDescriptorFactory
 		private readonly context: ExtensionContext,
 		private readonly preloadPromise: Promise<void>,
 	) {}
+
 	async createDebugAdapterDescriptor(
 		session: DebugSession,
 	): Promise<DebugAdapterDescriptor> {
@@ -135,6 +144,7 @@ export class DebugAdapterDescriptorFactory
 
 export function activate(context: ExtensionContext) {
 	const preloadPromise = PythonInstallation.preload();
+
 	context.subscriptions.push(
 		commands.registerCommand(
 			"vscode-python-web-wasm.debug.runEditorContents",
@@ -142,11 +152,13 @@ export function activate(context: ExtensionContext) {
 				if (!isCossOriginIsolated()) {
 					return false;
 				}
+
 				let targetResource = resource;
 
 				if (!targetResource && window.activeTextEditor) {
 					targetResource = window.activeTextEditor.document.uri;
 				}
+
 				if (targetResource) {
 					await preloadPromise;
 
@@ -159,14 +171,18 @@ export function activate(context: ExtensionContext) {
 
 					const ctrlC = pty.onDidCtrlC(() => {
 						ctrlC.dispose();
+
 						launcher.terminate().catch(console.error);
+
 						Terminals.releaseExecutionTerminal(pty, true);
 					});
+
 					await launcher.run(
 						context,
 						targetResource.toString(true),
 						pty,
 					);
+
 					launcher
 						.onExit()
 						.catch(() => {
@@ -174,9 +190,11 @@ export function activate(context: ExtensionContext) {
 						})
 						.finally(() => {
 							ctrlC.dispose();
+
 							Terminals.releaseExecutionTerminal(pty);
 						});
 				}
+
 				return false;
 			},
 		),
@@ -186,11 +204,13 @@ export function activate(context: ExtensionContext) {
 				if (!isCossOriginIsolated()) {
 					return false;
 				}
+
 				let targetResource = resource;
 
 				if (!targetResource && window.activeTextEditor) {
 					targetResource = window.activeTextEditor.document.uri;
 				}
+
 				if (targetResource) {
 					await preloadPromise;
 
@@ -203,6 +223,7 @@ export function activate(context: ExtensionContext) {
 						console: "internalConsole",
 					});
 				}
+
 				return false;
 			},
 		),
@@ -212,16 +233,21 @@ export function activate(context: ExtensionContext) {
 				if (!isCossOriginIsolated()) {
 					return false;
 				}
+
 				const pty = Terminals.getReplTerminal(true);
 
 				const ctrlC = pty.onDidCtrlC(() => {
 					ctrlC.dispose();
+
 					launcher.terminate().catch(console.error);
+
 					Terminals.releaseReplTerminal(pty, true);
 				});
 
 				const launcher = RAL().launcher.create();
+
 				await launcher.startRepl(context, pty);
+
 				launcher
 					.onExit()
 					.catch(() => {
@@ -229,6 +255,7 @@ export function activate(context: ExtensionContext) {
 					})
 					.finally(() => {
 						ctrlC.dispose();
+
 						Terminals.releaseReplTerminal(pty);
 					});
 
@@ -248,11 +275,13 @@ export function activate(context: ExtensionContext) {
 	);
 
 	const provider = new DebugConfigurationProvider(preloadPromise);
+
 	context.subscriptions.push(
 		debug.registerDebugConfigurationProvider("python-web-wasm", provider),
 	);
 
 	const factory = new DebugAdapterDescriptorFactory(context, preloadPromise);
+
 	context.subscriptions.push(
 		debug.registerDebugAdapterDescriptorFactory("python-web-wasm", factory),
 	);

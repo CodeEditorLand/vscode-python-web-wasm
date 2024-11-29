@@ -12,11 +12,13 @@ export namespace Tracer {
 		if (channel === undefined) {
 			channel = window.createOutputChannel("Python WASM");
 		}
+
 		return channel;
 	}
 
 	export function append(message: string): void {
 		const channel = getChannel();
+
 		channel.appendLine(
 			`[Info - ${new Date().toLocaleTimeString()}] ${message}`,
 		);

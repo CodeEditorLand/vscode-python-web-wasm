@@ -28,6 +28,7 @@ export class DesktopLauncher extends BaseLauncher {
 			context.extensionUri,
 			"./dist/desktop/pythonWasmWorker.js",
 		).fsPath;
+
 		this.worker = new Worker(filename);
 
 		const channel = new MessageChannel();
@@ -38,6 +39,7 @@ export class DesktopLauncher extends BaseLauncher {
 
 				return;
 			}
+
 			this.worker.once("message", (value: string) => {
 				if (value === "ready") {
 					resolve();
@@ -46,7 +48,9 @@ export class DesktopLauncher extends BaseLauncher {
 				}
 			});
 		});
+
 		this.worker.postMessage(channel.port2, [channel.port2]);
+
 		await ready;
 
 		return new SyncMessageConnection<

@@ -115,6 +115,7 @@ class DebugFileFD extends DebugFileDescriptor {
 			fdflags,
 			inode,
 		);
+
 		this.cursor = 0;
 	}
 }
@@ -125,6 +126,7 @@ export function create(
 	fileDescriptorId: { next(): number },
 	posix_path: {
 		readonly join: (...paths: string[]) => string;
+
 		readonly sep: string;
 	},
 	uri: URI,
@@ -143,6 +145,7 @@ export function create(
 			if (fd === undefined) {
 				throw new WasiError(Errno.inval);
 			}
+
 			_root = new DebugDirectoryFD(
 				deviceId,
 				fd,
@@ -152,6 +155,7 @@ export function create(
 				0n,
 			);
 		}
+
 		return _root;
 	}
 
@@ -168,6 +172,7 @@ export function create(
 				1n,
 			);
 		}
+
 		return _main;
 	}
 
@@ -187,6 +192,7 @@ export function create(
 				2n,
 			);
 		}
+
 		return _input;
 	}
 
@@ -206,6 +212,7 @@ export function create(
 				3n,
 			);
 		}
+
 		return _output;
 	}
 
@@ -227,6 +234,7 @@ export function create(
 				throw new WasiError(Errno.noent);
 		}
 	}
+
 	function assertDebugFileDescriptor(
 		fileDescriptor: FileDescriptor,
 	): asserts fileDescriptor is DebugFileDescriptor {
@@ -270,6 +278,7 @@ export function create(
 			if (next === undefined) {
 				return undefined;
 			}
+
 			return [next, rootFd(fd)];
 		},
 		path_open(
@@ -291,8 +300,11 @@ export function create(
 		},
 		fd_fdstat_get(fileDescriptor: FileDescriptor, result: fdstat): void {
 			result.fs_filetype = fileDescriptor.fileType;
+
 			result.fs_flags = fileDescriptor.fdflags;
+
 			result.fs_rights_base = fileDescriptor.rights_base;
+
 			result.fs_rights_inheriting = fileDescriptor.rights_inheriting;
 		},
 		fd_filestat_get(
@@ -300,13 +312,19 @@ export function create(
 			result: filestat,
 		): void {
 			result.dev = fileDescriptor.deviceId;
+
 			result.ino = fileDescriptor.inode;
+
 			result.filetype = fileDescriptor.fileType;
+
 			result.nlink = 0n;
 
 			const now = BigInt(Date.now());
+
 			result.atim = now;
+
 			result.ctim = now;
+
 			result.mtim = now;
 
 			if (fileDescriptor instanceof DebugCharacterDeviceFD) {
@@ -326,6 +344,7 @@ export function create(
 			if (fileDescriptor instanceof DebugCharacterDeviceFD) {
 				return _offset;
 			}
+
 			assertFile(fileDescriptor);
 
 			const offset = BigInts.asNumber(_offset);
@@ -349,12 +368,14 @@ export function create(
 
 					break;
 			}
+
 			return BigInt(fileDescriptor.cursor);
 		},
 		fd_read(fileDescriptor: FileDescriptor, buffers: Uint8Array[]): size {
 			if (buffers.length === 0) {
 				return 0;
 			}
+
 			const maxBytesToRead = buffers.reduce<number>(
 				(prev, current) => prev + current.length,
 				0,
@@ -365,35 +386,47 @@ export function create(
 			let offset: number | undefined;
 
 			let fileFD: DebugFileFD | undefined;
+
 			assertDebugFileDescriptor(fileDescriptor);
 
 			if (fileDescriptor === inputFd()) {
 				content = apiClient.byteSource.read(uri, maxBytesToRead);
+
 				offset = 0;
 			} else if (fileDescriptor === mainFd()) {
 				assertFile(fileDescriptor);
+
 				fileFD = fileDescriptor;
+
 				content = textEncoder.encode(mainContent);
+
 				offset = fileDescriptor.cursor;
 			}
+
 			if (content === undefined || offset === undefined) {
 				throw new WasiError(Errno.badf);
 			}
+
 			let totalBytesRead = 0;
 
 			for (const buffer of buffers) {
 				const toCopy = Math.min(buffer.length, content.length - offset);
+
 				buffer.set(content.subarray(offset, toCopy));
+
 				offset += toCopy;
+
 				totalBytesRead += toCopy;
 
 				if (toCopy < buffer.length) {
 					break;
 				}
 			}
+
 			if (fileFD !== undefined) {
 				fileFD.cursor = fileFD.cursor + totalBytesRead;
 			}
+
 			return totalBytesRead;
 		},
 		fd_write(fileDescriptor: FileDescriptor, buffers: Uint8Array[]): size {
@@ -402,6 +435,7 @@ export function create(
 			if (fileDescriptor !== outputFd()) {
 				throw new WasiError(Errno.badf);
 			}
+
 			let buffer: Uint8Array;
 
 			if (buffers.length === 1) {
@@ -411,15 +445,18 @@ export function create(
 					(prev, current) => prev + current.length,
 					0,
 				);
+
 				buffer = new Uint8Array(byteLength);
 
 				let offset = 0;
 
 				for (const item of buffers) {
 					buffer.set(item, offset);
+
 					offset = item.byteLength;
 				}
 			}
+
 			apiClient.byteSink.write(uri, buffer);
 
 			return buffer.byteLength;
