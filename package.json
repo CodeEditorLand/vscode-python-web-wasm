@@ -115,7 +115,7 @@
 	},
 	"description": "Experimental support for Python in the Web using WebAssemblies",
 	"devDependencies": {
-		"@types/node": "22.10.0",
+		"@types/node": "22.10.1",
 		"@types/uuid": "10.0.0",
 		"esbuild": "0.24.0",
 		"localtunnel": "2.0.2",
