@@ -128,7 +128,7 @@
 		"ms-vscode.remote-repositories"
 	],
 	"main": "./dist/desktop/extension.js",
-	"name": "vscode-python-web-wasm",
+	"name": "@codeeditorland/python-web-wasm",
 	"preview": true,
 	"scripts": {
 		"all": "npm run clean && npm run compile:tsc && npm run esbuild && npm run lint",
