@@ -127,12 +127,12 @@
 	"dependencies": {
 		"@types/path-browserify": "1.0.3",
 		"path-browserify": "1.0.1",
-		"uuid": "11.0.3"
+		"uuid": "11.0.4"
 	},
 	"devDependencies": {
-		"@types/node": "22.10.1",
+		"@types/node": "22.10.5",
 		"@types/uuid": "10.0.0",
-		"esbuild": "0.24.0",
+		"esbuild": "0.24.2",
 		"localtunnel": "2.0.2",
 		"rimraf": "6.0.1",
 		"serve": "14.2.4",
