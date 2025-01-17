@@ -130,7 +130,7 @@
 		"uuid": "11.0.5"
 	},
 	"devDependencies": {
-		"@types/node": "22.10.6",
+		"@types/node": "22.10.7",
 		"@types/uuid": "10.0.0",
 		"esbuild": "0.24.2",
 		"localtunnel": "2.0.2",
